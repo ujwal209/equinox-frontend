@@ -19,46 +19,10 @@ export const Route = createFileRoute('/dashboard/paper-trading')({
 })
 
 const getCompanyLogo = (name: string, symbol: string) => {
-  const n = name.toLowerCase()
-  const s = symbol.toUpperCase().split('.')[0]
-  const client_id = "1idlu8B6H0L485PeI84"
-  
-  const map: Record<string, string> = {
-    'RELIANCE': 'ril.com',
-    'TCS': 'tcs.com',
-    'INFY': 'infosys.com',
-    'HDFCBANK': 'hdfcbank.com',
-    'ICICIBANK': 'icicibank.com',
-    'WIPRO': 'wipro.com',
-    'ADANIENT': 'adani.com',
-    'ADANIPORTS': 'adani.com',
-    'ADANIENSOL': 'adani.com',
-    'WOCKPHARMA': 'wockhardt.com',
-    'AAPL': 'apple.com',
-    'MSFT': 'microsoft.com',
-    'NVDA': 'nvidia.com',
-    'GOOGL': 'google.com',
-    'GOOG': 'google.com',
-    'AMZN': 'amazon.com',
-    'TSLA': 'tesla.com',
-    'META': 'meta.com',
-    'NFLX': 'netflix.com'
-  }
-  
-  const domain = map[s] || (
-    n.includes('reliance') ? 'ril.com' :
-    n.includes('tata consultancy') || n.includes('tcs') ? 'tcs.com' :
-    n.includes('infosys') ? 'infosys.com' :
-    n.includes('hdfc') ? 'hdfcbank.com' :
-    n.includes('icici') ? 'icicibank.com' :
-    n.includes('wipro') ? 'wipro.com' :
-    n.includes('adani') ? 'adani.com' :
-    n.includes('wockhardt') || n.includes('wockpharma') ? 'wockhardt.com' :
-    !symbol.includes('.') ? `${s.toLowerCase()}.com` : null
-  )
-  
-  if (domain) return `https://cdn.brandfetch.io/domain/${domain}?c=${client_id}`
-  return null
+  if (!symbol) return null
+  const clean = symbol.split('.')[0].toUpperCase()
+  const exchange = symbol.toUpperCase().endsWith('.BO') ? 'BSE' : (symbol.includes('.') ? 'NSE' : 'US')
+  return `https://eodhd.com/img/logos/${exchange}/${clean}.png`
 }
 
 function PaperTrading() {
@@ -331,12 +295,15 @@ function PaperTrading() {
       {/* Header Area */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Virtual Trading Arena</span>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Virtual Intraday Trading Arena</span>
+          <h1 className="text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
             Paper Trading
+            <Badge variant="outline" className="ml-2 border-emerald-500/30 text-emerald-400 bg-emerald-500/10 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
+              9:15 AM - 3:30 PM IST
+            </Badge>
           </h1>
           <p className="text-sm text-muted-foreground font-semibold mt-1">
-            Real-time market execution sandbox. Unlimited budget available.
+            Intraday execution sandbox operating strictly during Indian Stock Market hours (9:15 AM - 3:30 PM IST).
           </p>
         </div>
         
@@ -344,7 +311,7 @@ function PaperTrading() {
           <Button 
             variant="outline" 
             onClick={activeTab === 'portfolio' ? () => fetchPortfolio(false) : fetchStatements}
-            className="rounded-xl border-border bg-muted/10 hover:bg-muted/20 font-bold text-white h-9 px-4 cursor-pointer"
+            className="rounded-xl border-border bg-muted/10 hover:bg-muted/20 font-bold text-foreground h-9 px-4 cursor-pointer"
           >
             <RefreshCw className={cn("h-4 w-4 mr-2", isLoading && "animate-spin")} /> Refresh
           </Button>
@@ -364,15 +331,15 @@ function PaperTrading() {
                 <Plus className="h-4 w-4 mr-1.5" /> Place Order
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-zinc-950 border border-border rounded-[2rem] p-0 overflow-hidden w-[90vw] sm:max-w-xl shadow-2xl text-left">
+            <DialogContent className="bg-card border border-border rounded-[2rem] p-0 overflow-hidden w-[90vw] sm:max-w-xl shadow-2xl text-left">
               {/* Kite Style Header */}
               <div className={cn(
-                "px-6 py-4 flex justify-between items-center text-white font-black text-base tracking-tight",
+                "px-6 py-4 flex justify-between items-center text-foreground font-black text-base tracking-tight",
                 orderType === 'BUY' ? "bg-emerald-650" : "bg-rose-600"
               )}>
                 <div className="flex items-center gap-2">
                   <span>{orderType} {orderSymbol || 'ORDER'}</span>
-                  <Badge variant="outline" className="text-[8px] font-black border-white/20 text-white uppercase bg-white/10 scale-90">NSE</Badge>
+                  <Badge variant="outline" className="text-[8px] font-black border-white/20 text-foreground uppercase bg-white/10 scale-90">NSE</Badge>
                 </div>
               </div>
               
@@ -383,7 +350,7 @@ function PaperTrading() {
                     type="button"
                     onClick={() => setOrderType('BUY')}
                     className={cn("flex-1 py-2 text-xs font-black rounded-lg transition-all cursor-pointer", 
-                      orderType === 'BUY' ? "bg-emerald-650 text-white shadow-sm" : "text-muted-foreground hover:text-white"
+                      orderType === 'BUY' ? "bg-emerald-650 text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     BUY
@@ -392,7 +359,7 @@ function PaperTrading() {
                     type="button"
                     onClick={() => setOrderType('SELL')}
                     className={cn("flex-1 py-2 text-xs font-black rounded-lg transition-all cursor-pointer", 
-                      orderType === 'SELL' ? "bg-rose-650 text-white shadow-sm" : "text-muted-foreground hover:text-rose-500"
+                      orderType === 'SELL' ? "bg-rose-650 text-foreground shadow-sm" : "text-muted-foreground hover:text-rose-500"
                     )}
                   >
                     SELL
@@ -410,13 +377,13 @@ function PaperTrading() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search stock symbol (e.g. RELIANCE)..." 
-                        className="pl-10 h-12 bg-muted/10 border-border text-white font-bold rounded-xl focus-visible:ring-white/5 focus-visible:border-zinc-500 text-sm"
+                        className="pl-10 h-12 bg-muted/10 border-border text-foreground font-bold rounded-xl focus-visible:ring-white/5 focus-visible:border-zinc-500 text-sm"
                       />
                       {isSearching && <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />}
                       
                       {/* Search dropdown menu */}
                       {searchResults.length > 0 && (
-                        <div className="absolute z-50 top-[calc(100%+8px)] left-0 right-0 bg-zinc-950 border border-border rounded-xl shadow-2xl overflow-hidden divide-y divide-border/60">
+                        <div className="absolute z-50 top-[calc(100%+8px)] left-0 right-0 bg-card border border-border rounded-xl shadow-2xl overflow-hidden divide-y divide-border/60">
                           {searchResults.map(res => {
                             const logoUrl = getCompanyLogo(res.name, res.symbol)
                             return (
@@ -437,12 +404,12 @@ function PaperTrading() {
                                     onError={(e) => (e.currentTarget.style.display = 'none')} 
                                   />
                                 ) : (
-                                  <div className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-[9px] font-black text-white shrink-0 uppercase">
+                                  <div className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-[9px] font-black text-foreground shrink-0 uppercase">
                                     {res.symbol.slice(0, 2)}
                                   </div>
                                 )}
                                 <div>
-                                  <p className="font-extrabold text-white text-xs tracking-tight">{res.symbol}</p>
+                                  <p className="font-extrabold text-foreground text-xs tracking-tight">{res.symbol}</p>
                                   <p className="text-[10px] font-bold text-muted-foreground truncate max-w-[180px] mt-0.5">{res.name}</p>
                                 </div>
                               </div>
@@ -462,13 +429,13 @@ function PaperTrading() {
                             onError={(e) => (e.currentTarget.style.display = 'none')} 
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-[10px] font-black text-white uppercase">
+                          <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-[10px] font-black text-foreground uppercase">
                             {orderSymbol.slice(0, 2)}
                           </div>
                         )}
-                        <span className="font-black text-sm text-white">{orderSymbol}</span>
+                        <span className="font-black text-sm text-foreground">{orderSymbol}</span>
                       </div>
-                      <button type="button" onClick={() => setOrderSymbol('')} className="p-1.5 hover:bg-muted/20 rounded-full text-muted-foreground hover:text-white cursor-pointer">
+                      <button type="button" onClick={() => setOrderSymbol('')} className="p-1.5 hover:bg-muted/20 rounded-full text-muted-foreground hover:text-foreground cursor-pointer">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
@@ -484,7 +451,7 @@ function PaperTrading() {
                       value={orderQty}
                       onChange={(e) => setOrderQty(e.target.value)}
                       placeholder="0" 
-                      className="h-12 bg-muted/10 border-border text-white font-bold rounded-xl focus-visible:ring-white/5 focus-visible:border-zinc-500 text-sm"
+                      className="h-12 bg-muted/10 border-border text-foreground font-bold rounded-xl focus-visible:ring-white/5 focus-visible:border-zinc-500 text-sm"
                     />
                   </div>
                   <div className="space-y-2">
@@ -494,7 +461,7 @@ function PaperTrading() {
                       value={stopLoss}
                       onChange={(e) => setStopLoss(e.target.value)}
                       placeholder="0.00" 
-                      className="h-12 bg-muted/10 border-border text-white font-bold rounded-xl focus-visible:ring-white/5 focus-visible:border-zinc-500 text-sm"
+                      className="h-12 bg-muted/10 border-border text-foreground font-bold rounded-xl focus-visible:ring-white/5 focus-visible:border-zinc-500 text-sm"
                     />
                   </div>
                 </div>
@@ -515,7 +482,7 @@ function PaperTrading() {
                   <Button 
                     onClick={submitOrder}
                     disabled={isSubmittingOrder || !orderSymbol}
-                    className={cn("rounded-xl font-black text-xs h-9 px-6 cursor-pointer text-white border-none", 
+                    className={cn("rounded-xl font-black text-xs h-9 px-6 cursor-pointer text-foreground border-none", 
                       orderType === 'BUY' ? "bg-emerald-650 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"
                     )}
                   >
@@ -534,7 +501,7 @@ function PaperTrading() {
           onClick={() => setActiveTab('portfolio')}
           className={cn(
             "px-4 py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5",
-            activeTab === 'portfolio' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-white"
+            activeTab === 'portfolio' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-foreground"
           )}
         >
           <Briefcase className="h-3.5 w-3.5" /> Portfolio
@@ -543,7 +510,7 @@ function PaperTrading() {
           onClick={() => setActiveTab('statements')}
           className={cn(
             "px-4 py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5",
-            activeTab === 'statements' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-white"
+            activeTab === 'statements' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-foreground"
           )}
         >
           <History className="h-3.5 w-3.5" /> Statements
@@ -592,7 +559,7 @@ function PaperTrading() {
             {positions.length === 0 ? (
               <Card className="rounded-[2.2rem] border border-border bg-muted/5 p-10 flex flex-col items-center justify-center text-center shadow-inner">
                 <Briefcase className="h-10 w-10 text-muted-foreground opacity-30 mb-4" />
-                <h3 className="text-base font-bold text-white mb-1">No Active Positions</h3>
+                <h3 className="text-base font-bold text-foreground mb-1">No Active Positions</h3>
                 <p className="text-xs text-muted-foreground max-w-sm font-semibold mb-6">
                   You haven't purchased any virtual equities yet. Place a buy order to begin.
                 </p>
@@ -616,12 +583,17 @@ function PaperTrading() {
                     <tbody className="divide-y divide-border">
                       {positions.map((pos) => {
                         const logoUrl = getCompanyLogo(pos.symbol, pos.symbol)
-                        const prevLtp = prevPricesRef.current[pos.symbol] ?? pos.ltp
-                        const priceDir = pos.ltp > prevLtp ? 'UP' : pos.ltp < prevLtp ? 'DOWN' : 'STABLE'
+                        const safeLtp = typeof pos.ltp === 'number' && Number.isFinite(pos.ltp) ? pos.ltp : (pos.avg_price || 0)
+                        const safePnl = typeof pos.pnl === 'number' && Number.isFinite(pos.pnl) ? pos.pnl : 0
+                        const safePnlPct = typeof pos.pnl_percent === 'number' && Number.isFinite(pos.pnl_percent) ? pos.pnl_percent : 0
+                        const safeInvested = typeof pos.invested === 'number' && Number.isFinite(pos.invested) ? pos.invested : 0
+                        
+                        const prevLtp = prevPricesRef.current[pos.symbol] ?? safeLtp
+                        const priceDir = safeLtp > prevLtp ? 'UP' : safeLtp < prevLtp ? 'DOWN' : 'STABLE'
                         
                         return (
                           <tr key={pos.symbol} className="hover:bg-muted/20 transition-colors duration-300">
-                            <td className="px-8 py-5 font-black text-white flex items-center gap-3">
+                            <td className="px-8 py-5 font-black text-foreground flex items-center gap-3">
                               {logoUrl ? (
                                 <img 
                                   src={logoUrl} 
@@ -630,37 +602,37 @@ function PaperTrading() {
                                   onError={(e) => (e.currentTarget.style.display = 'none')} 
                                 />
                               ) : (
-                                <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center text-[10px] font-black text-white shrink-0 uppercase">
+                                <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center text-[10px] font-black text-foreground shrink-0 uppercase">
                                   {pos.symbol.slice(0, 2)}
                                 </div>
                               )}
                               {pos.symbol}
                             </td>
-                            <td className="px-8 py-5 font-bold text-white text-right">{pos.quantity}</td>
-                            <td className="px-8 py-5 font-bold text-muted-foreground text-right">{convert(pos.avg_price).formatted}</td>
+                            <td className="px-8 py-5 font-bold text-foreground text-right">{pos.quantity}</td>
+                            <td className="px-8 py-5 font-bold text-muted-foreground text-right">{convert(pos.avg_price || 0).formatted}</td>
                             
                             {/* Live Price with smooth transitions */}
                             <td className="px-8 py-5 text-right font-black">
                               <span className={cn(
                                 "transition-all duration-700 px-2 py-1 rounded-md",
                                 priceDir === 'UP' ? 'bg-emerald-500/10 text-emerald-500' :
-                                priceDir === 'DOWN' ? 'bg-rose-500/10 text-rose-500' : 'text-white'
+                                priceDir === 'DOWN' ? 'bg-rose-500/10 text-rose-500' : 'text-foreground'
                               )}>
-                                {convert(pos.ltp).formatted}
+                                {convert(safeLtp).formatted}
                               </span>
                             </td>
 
-                            <td className="px-8 py-5 font-bold text-muted-foreground text-right">{convert(pos.invested).formatted}</td>
+                            <td className="px-8 py-5 font-bold text-muted-foreground text-right">{convert(safeInvested).formatted}</td>
                             
                             <td className={cn(
                               "px-8 py-5 font-black text-right",
-                              pos.pnl >= 0 ? "text-emerald-500" : "text-rose-500"
+                              safePnl >= 0 ? "text-emerald-500" : "text-rose-500"
                             )}>
                               <div className="flex items-center justify-end gap-1">
-                                {pos.pnl >= 0 ? '+' : ''}{pos.pnl_percent}%
+                                {safePnl >= 0 ? '+' : ''}{safePnlPct.toFixed(2)}%
                               </div>
                               <span className="text-[10px] font-bold block mt-0.5">
-                                {pos.pnl >= 0 ? '+' : ''}{convert(pos.pnl).formatted}
+                                {safePnl >= 0 ? '+' : ''}{convert(safePnl).formatted}
                               </span>
                             </td>
                             
@@ -703,12 +675,12 @@ function PaperTrading() {
                                 onError={(e) => (e.currentTarget.style.display = 'none')} 
                               />
                             ) : (
-                              <div className="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center text-[10px] font-black text-white uppercase shrink-0">
+                              <div className="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center text-[10px] font-black text-foreground uppercase shrink-0">
                                 {pos.symbol.slice(0, 2)}
                               </div>
                             )}
                             <div className="overflow-hidden">
-                              <h4 className="font-extrabold text-white text-sm tracking-tight truncate">{pos.symbol}</h4>
+                              <h4 className="font-extrabold text-foreground text-sm tracking-tight truncate">{pos.symbol}</h4>
                               <p className="text-[10px] font-bold text-muted-foreground truncate">{pos.quantity} Shares</p>
                             </div>
                           </div>
@@ -717,7 +689,7 @@ function PaperTrading() {
                             <span className={cn(
                               "text-xs font-black transition-all duration-700 px-2 py-0.5 rounded-md",
                               priceDir === 'UP' ? 'bg-emerald-500/10 text-emerald-500' :
-                              priceDir === 'DOWN' ? 'bg-rose-500/10 text-rose-500' : 'text-white'
+                              priceDir === 'DOWN' ? 'bg-rose-500/10 text-rose-500' : 'text-foreground'
                             )}>
                               {convert(pos.ltp).formatted}
                             </span>
@@ -727,10 +699,10 @@ function PaperTrading() {
 
                         <div className="grid grid-cols-2 gap-2 border-t border-border/40 pt-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           <div>
-                            Avg Price: <span className="text-white block font-black text-xs mt-0.5">{convert(pos.avg_price).formatted}</span>
+                            Avg Price: <span className="text-foreground block font-black text-xs mt-0.5">{convert(pos.avg_price).formatted}</span>
                           </div>
                           <div className="text-right">
-                            Invested: <span className="text-white block font-black text-xs mt-0.5">{convert(pos.invested).formatted}</span>
+                            Invested: <span className="text-foreground block font-black text-xs mt-0.5">{convert(pos.invested).formatted}</span>
                           </div>
                         </div>
 
@@ -792,13 +764,13 @@ function PaperTrading() {
             </Card>
             <Card className="p-5 bg-muted/10 border-border rounded-[1.8rem]">
               <span className="text-[10px] font-black uppercase text-muted-foreground block mb-1">Exit Trades</span>
-              <span className="text-lg font-black text-white tabular-nums">
+              <span className="text-lg font-black text-foreground tabular-nums">
                 {periodStats.exitTradesCount}
               </span>
             </Card>
             <Card className="p-5 bg-muted/10 border-border rounded-[1.8rem]">
               <span className="text-[10px] font-black uppercase text-muted-foreground block mb-1">Win Rate</span>
-              <span className="text-lg font-black text-white tabular-nums">
+              <span className="text-lg font-black text-foreground tabular-nums">
                 {periodStats.winRate.toFixed(1)}%
               </span>
             </Card>
@@ -822,7 +794,7 @@ function PaperTrading() {
                   setSelectedMonth(e.target.value)
                   setStatementsPage(1)
                 }}
-                className="bg-zinc-900 border border-border rounded-xl text-xs font-semibold px-3 py-2 text-white focus:outline-none"
+                className="bg-muted/40 border border-border rounded-xl text-xs font-semibold px-3 py-2 text-foreground focus:outline-none"
               >
                 <option value="all">All Months</option>
                 {uniqueMonths.map(m => (
@@ -863,7 +835,7 @@ function PaperTrading() {
                             hour: '2-digit', minute: '2-digit', hour12: true 
                           }).format(new Date(stmt.timestamp + (stmt.timestamp.endsWith('Z') ? '' : 'Z')))}
                         </td>
-                        <td className="px-8 py-5 font-black text-white flex items-center gap-3">
+                        <td className="px-8 py-5 font-black text-foreground flex items-center gap-3">
                           {logoUrl && !brokenLogos[stmt.symbol] ? (
                             <img 
                               src={logoUrl} 
@@ -881,7 +853,7 @@ function PaperTrading() {
                             {stmt.order_type}
                           </Badge>
                         </td>
-                        <td className="px-8 py-5 font-bold text-white text-right">{stmt.quantity}</td>
+                        <td className="px-8 py-5 font-bold text-foreground text-right">{stmt.quantity}</td>
                         <td className="px-8 py-5 font-bold text-muted-foreground text-right">{convert(stmt.price).formatted}</td>
                         <td className="px-8 py-5 font-black text-right">
                           {stmt.order_type === 'SELL' ? (
@@ -915,7 +887,7 @@ function PaperTrading() {
                 <button
                   onClick={() => setStatementsPage(prev => Math.max(1, prev - 1))}
                   disabled={statementsPage === 1}
-                  className="p-2 rounded bg-zinc-900 border border-border text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                  className="p-2 rounded bg-muted/40 border border-border text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
                 >
                   ◀
                 </button>
@@ -929,7 +901,7 @@ function PaperTrading() {
                         "w-8 h-8 rounded text-xs font-black transition-all border cursor-pointer",
                         statementsPage === i + 1
                           ? "bg-white text-black border-white"
-                          : "bg-zinc-900 border-border text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                          : "bg-muted/40 border-border text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
                       )}
                     >
                       {i + 1}
@@ -940,7 +912,7 @@ function PaperTrading() {
                 <button
                   onClick={() => setStatementsPage(prev => Math.min(totalStatementsPages, prev + 1))}
                   disabled={statementsPage === totalStatementsPages}
-                  className="p-2 rounded bg-zinc-900 border border-border text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                  className="p-2 rounded bg-muted/40 border border-border text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
                 >
                   ▶
                 </button>

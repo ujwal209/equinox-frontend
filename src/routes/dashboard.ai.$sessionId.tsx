@@ -100,7 +100,7 @@ function DashboardAISession() {
     return (
       <div className="page-wrap py-24 text-center space-y-4">
         <h3 className="text-xl font-bold text-red-500">{error}</h3>
-        <Link to="/dashboard/ai" className="text-sm font-bold text-white hover:underline">
+        <Link to="/dashboard/ai" className="text-sm font-bold text-foreground hover:underline">
           Return to AI Dashboard
         </Link>
       </div>
@@ -112,11 +112,13 @@ function DashboardAISession() {
       {/* Header */}
       <div className="h-14 border-b border-border flex items-center justify-between px-6 bg-background/90 backdrop-blur z-20 shrink-0">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard/ai" className="p-2 rounded-xl bg-muted/50 text-muted-foreground hover:text-white transition-colors">
+          <Link to="/dashboard/ai" className="p-2 rounded-xl bg-muted/50 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div className="flex items-center gap-2.5">
-            <LogoIcon className="h-5 w-5 invert dark:invert-0" />
+            <div className="h-8 w-8 rounded-full bg-black border border-zinc-700 p-1 flex items-center justify-center shadow-md shrink-0">
+              <img src="/logo.png" className="h-full w-full object-contain" alt="AI" />
+            </div>
             <div>
               <h2 className="text-sm font-black text-foreground">{session?.title || 'Shared Session'}</h2>
             </div>
@@ -126,7 +128,7 @@ function DashboardAISession() {
         <button 
           onClick={handleContinueChat}
           disabled={isCloning}
-          className="text-xs font-bold bg-foreground text-background hover:bg-zinc-800 hover:text-white px-3.5 py-1.5 rounded-lg transition-all shadow-sm cursor-pointer disabled:opacity-50"
+          className="text-xs font-bold bg-primary text-primary-foreground hover:opacity-90 px-3.5 py-1.5 rounded-lg transition-all shadow-sm cursor-pointer disabled:opacity-50"
         >
           {isCloning ? 'Duplicating...' : 'Continue Chat'}
         </button>
@@ -138,9 +140,9 @@ function DashboardAISession() {
           {messages.map((msg, idx) => (
             <div key={msg._id || idx} className={`flex gap-4 w-full group ${msg.role === 'user' ? "flex-row-reverse" : "flex-row"}`}>
               <div className={cn(
-                "h-8 w-8 shrink-0 rounded-full flex items-center justify-center shadow-sm border border-zinc-800 bg-black text-white"
+                "h-8 w-8 shrink-0 rounded-full flex items-center justify-center shadow-md border border-zinc-700 bg-black text-white p-1"
               )}>
-                {msg.role === 'ai' ? <LogoIcon className="h-4 w-4" /> : <div className="text-xs font-bold">U</div>}
+                {msg.role === 'ai' ? <img src="/logo.png" className="h-full w-full object-contain" alt="AI" /> : <div className="text-xs font-black text-white">U</div>}
               </div>
               
               <div className={cn(

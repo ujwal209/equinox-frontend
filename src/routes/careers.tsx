@@ -89,10 +89,10 @@ function CareersPage() {
         
         {/* Header Block */}
         <div className="space-y-4">
-          <Badge variant="outline" className="px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-zinc-900 border-zinc-800 text-zinc-400">
+          <Badge variant="outline" className="px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-muted/40 border-border text-zinc-400">
             Careers at Equinox
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none">
+          <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight leading-none">
             Build the Future of Financial Intelligence.
           </h1>
           <p className="text-base text-muted-foreground max-w-3xl font-semibold leading-relaxed">
@@ -104,7 +104,7 @@ function CareersPage() {
         <section className="grid gap-6 grid-cols-1 md:grid-cols-3">
           <Card className="rounded-[2rem] p-8 border-border bg-muted/10">
             <Users className="h-6 w-6 text-zinc-400 mb-4" />
-            <h3 className="text-sm font-black text-white uppercase tracking-wider mb-2">High Autonomy</h3>
+            <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">High Autonomy</h3>
             <p className="text-xs text-muted-foreground leading-relaxed font-semibold">
               We operate in micro-squads. You own your service end-to-end—from DB architecture to UI performance.
             </p>
@@ -112,7 +112,7 @@ function CareersPage() {
           
           <Card className="rounded-[2rem] p-8 border-border bg-muted/10">
             <Shield className="h-6 w-6 text-zinc-400 mb-4" />
-            <h3 className="text-sm font-black text-white uppercase tracking-wider mb-2">Open Infrastructure</h3>
+            <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">Open Infrastructure</h3>
             <p className="text-xs text-muted-foreground leading-relaxed font-semibold">
               We build open-source tools first. Contributing back to the tooling ecosystem is baked into our daily workflow.
             </p>
@@ -120,7 +120,7 @@ function CareersPage() {
 
           <Card className="rounded-[2rem] p-8 border-border bg-muted/10">
             <Compass className="h-6 w-6 text-zinc-400 mb-4" />
-            <h3 className="text-sm font-black text-white uppercase tracking-wider mb-2">Global Operations</h3>
+            <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">Global Operations</h3>
             <p className="text-xs text-muted-foreground leading-relaxed font-semibold">
               Our servers span Mumbai, Singapore, and Frankfurt. We support remote work across all APAC timezones.
             </p>
@@ -129,14 +129,14 @@ function CareersPage() {
 
         {/* Positions Section */}
         <div className="space-y-6">
-          <h2 className="text-xl font-black text-white uppercase tracking-wider ml-1">Open Positions</h2>
+          <h2 className="text-xl font-black text-foreground uppercase tracking-wider ml-1">Open Positions</h2>
           
           <div className="space-y-6">
             {positions.map((pos) => (
-              <Card key={pos.id} className="rounded-[2rem] p-6 sm:p-8 border-border bg-muted/5 hover:bg-muted/10 hover:border-zinc-700 transition-all duration-300">
+              <Card key={pos.id} className="rounded-[2rem] p-6 sm:p-8 border-border bg-muted/5 hover:bg-muted/10 hover:border-border transition-all duration-300">
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-border/40 pb-6 mb-6">
                   <div className="space-y-2">
-                    <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">{pos.title}</h3>
+                    <h3 className="text-lg sm:text-xl font-black text-foreground tracking-tight">{pos.title}</h3>
                     <div className="flex flex-wrap gap-2 text-[10px] font-bold text-muted-foreground uppercase">
                       <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" /> {pos.team}</span>
                       <span className="text-zinc-650">•</span>
@@ -145,7 +145,7 @@ function CareersPage() {
                       <span className="flex items-center gap-1"><DollarSign className="h-3.5 w-3.5" /> {pos.salary}</span>
                     </div>
                   </div>
-                  <Badge className="w-fit bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold text-[10px] px-3.5 py-1 uppercase rounded-lg">
+                  <Badge className="w-fit bg-muted/40 border border-border text-zinc-300 font-bold text-[10px] px-3.5 py-1 uppercase rounded-lg">
                     {pos.type}
                   </Badge>
                 </div>
@@ -154,7 +154,7 @@ function CareersPage() {
                   <p className="text-xs text-muted-foreground leading-relaxed font-semibold">{pos.description}</p>
                   
                   <div className="space-y-2">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white block mb-1">Key Qualifications</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-foreground block mb-1">Key Qualifications</span>
                     <ul className="space-y-2 pl-0 list-none text-xs text-muted-foreground font-semibold">
                       {pos.requirements.map((req, idx) => (
                         <li key={idx} className="flex items-start gap-2">
@@ -175,7 +175,7 @@ function CareersPage() {
           <div className="absolute -right-20 -bottom-20 w-60 h-60 bg-zinc-500/5 rounded-full blur-[80px] pointer-events-none" />
           
           <div className="max-w-2xl">
-            <h2 className="text-xl font-black text-white uppercase tracking-wider mb-2">Can't find a direct role?</h2>
+            <h2 className="text-xl font-black text-foreground uppercase tracking-wider mb-2">Can't find a direct role?</h2>
             <p className="text-xs text-muted-foreground font-semibold leading-relaxed mb-8">
               We are constantly seeking outstanding technical partners. Send over your resume, GitHub profile, or quantitative research documents, and we will get back to you.
             </p>
@@ -220,7 +220,7 @@ function CareersPage() {
                   <select
                     value={form.role}
                     onChange={(e) => setForm({ ...form, role: e.target.value })}
-                    className="w-full h-10 rounded-xl border border-border bg-background text-xs font-bold text-white px-3 focus:outline-none"
+                    className="w-full h-10 rounded-xl border border-border bg-background text-xs font-bold text-foreground px-3 focus:outline-none"
                   >
                     <option value="Engineering">Engineering (UI/Backend)</option>
                     <option value="Research">Quantitative Research</option>
@@ -240,7 +240,7 @@ function CareersPage() {
                   />
                 </div>
 
-                <Button type="submit" className="rounded-xl h-11 bg-blue-600 hover:bg-blue-700 text-white border-0 font-black text-xs uppercase px-6 tracking-wider flex items-center gap-2">
+                <Button type="submit" className="rounded-xl h-11 bg-blue-600 hover:bg-blue-700 text-foreground border-0 font-black text-xs uppercase px-6 tracking-wider flex items-center gap-2">
                   Submit Profile <ArrowRight className="h-4 w-4" />
                 </Button>
               </form>

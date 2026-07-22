@@ -18,7 +18,7 @@ body {
   font-variation-settings: "GRAD" 0;
 }
 
-:root {
+:root, html.dark, html[data-theme='dark'] {
   --sea-ink: #ffffff;
   --sea-ink-soft: #a1a1aa;
   --lagoon: #ffffff;
@@ -68,6 +68,54 @@ body {
   --sidebar-foreground: var(--sea-ink);
   --sidebar-primary: var(--sea-ink);
   --sidebar-primary-foreground: var(--bg-base);
+  --sidebar-accent: var(--link-bg-hover);
+  --sidebar-accent-foreground: var(--sea-ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--sea-ink);
+}
+
+html.light, html[data-theme='light'] {
+  --sea-ink: #09090b;
+  --sea-ink-soft: #71717a;
+  --lagoon: #000000;
+  --lagoon-deep: #000000;
+  --palm: #18181b;
+  --sand: #ffffff;
+  --foam: #ffffff;
+  --surface: rgba(244, 244, 245, 0.8);
+  --surface-strong: #ffffff;
+  --line: #e4e4e7;
+  --inset-glint: rgba(0, 0, 0, 0.03);
+  --kicker: #71717a;
+  --bg-base: #f4f4f5;
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --chip-bg: #e4e4e7;
+  --chip-line: #d4d4d8;
+  --link-bg-hover: rgba(0, 0, 0, 0.06);
+  --hero-a: rgba(0, 0, 0, 0.02);
+  --hero-b: rgba(0, 0, 0, 0.04);
+  --selection-bg: rgba(0, 0, 0, 0.1);
+  --background: var(--bg-base);
+  --foreground: var(--sea-ink);
+  --card: var(--surface-strong);
+  --card-foreground: var(--sea-ink);
+  --popover: var(--surface-strong);
+  --popover-foreground: var(--sea-ink);
+  --primary: var(--sea-ink);
+  --primary-foreground: #ffffff;
+  --secondary: var(--chip-bg);
+  --secondary-foreground: var(--sea-ink);
+  --muted: var(--chip-bg);
+  --muted-foreground: var(--sea-ink-soft);
+  --accent: var(--link-bg-hover);
+  --accent-foreground: var(--sea-ink);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--sea-ink);
+  --sidebar: var(--surface-strong);
+  --sidebar-foreground: var(--sea-ink);
+  --sidebar-primary: var(--sea-ink);
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: var(--link-bg-hover);
   --sidebar-accent-foreground: var(--sea-ink);
   --sidebar-border: var(--line);

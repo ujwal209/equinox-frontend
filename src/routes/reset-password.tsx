@@ -257,7 +257,7 @@ function ResetPasswordPage() {
           </form>
 
           {/* Development Tips */}
-          <div className="rounded-xl bg-zinc-900/10 border border-[var(--line)] p-4 text-[10px] text-[var(--sea-ink-soft)] leading-relaxed text-left space-y-1">
+          <div className="rounded-xl bg-muted/40/10 border border-[var(--line)] p-4 text-[10px] text-[var(--sea-ink-soft)] leading-relaxed text-left space-y-1">
             <span className="font-bold text-[var(--sea-ink)] block uppercase tracking-wider">Development Tip:</span>
             <p>If SMTP mail credentials are not configured in your backend `.env` variables, the 6-digit OTP code is logged directly to your **backend console/server logs**!</p>
           </div>

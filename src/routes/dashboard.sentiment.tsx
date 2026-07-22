@@ -164,7 +164,7 @@ function DashboardSentiment() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300 w-full max-w-7xl mx-auto pb-24 text-left">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
+        <h1 className="text-2xl font-black text-foreground tracking-tight flex items-center gap-2.5">
           <BarChart2 className="h-6 w-6" /> Market Sentiment Intelligence
         </h1>
         <p className="text-sm text-muted-foreground font-semibold mt-1">
@@ -188,7 +188,7 @@ function DashboardSentiment() {
                 }}
                 className={cn(
                   "px-4 py-2 text-xs font-bold rounded-lg uppercase tracking-wider transition-all cursor-pointer",
-                  activeCategory === cat ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-white"
+                  activeCategory === cat ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {cat}
@@ -204,7 +204,7 @@ function DashboardSentiment() {
               placeholder="Search custom topic or stock..."
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
-              className="flex-1 bg-transparent border-none text-xs font-bold text-white px-2 py-1.5 focus:outline-none"
+              className="flex-1 bg-transparent border-none text-xs font-bold text-foreground px-2 py-1.5 focus:outline-none"
             />
             <button
               type="submit"
@@ -226,8 +226,8 @@ function DashboardSentiment() {
                 className={cn(
                   "px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
                   activeQuery === p.query 
-                    ? "bg-zinc-800 border-zinc-700 text-white" 
-                    : "bg-muted/20 border-border text-muted-foreground hover:text-white"
+                    ? "bg-zinc-800 border-border text-foreground" 
+                    : "bg-muted/20 border-border text-muted-foreground hover:text-foreground"
                 )}
               >
                 {p.name}
@@ -240,7 +240,7 @@ function DashboardSentiment() {
       {/* Main Analysis Display */}
       {loading ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
-          <Loader2 className="h-8 w-8 text-white animate-spin" />
+          <Loader2 className="h-8 w-8 text-foreground animate-spin" />
           <p className="text-sm font-bold text-muted-foreground">Analyzing news and generating report...</p>
         </div>
       ) : error ? (
@@ -255,7 +255,7 @@ function DashboardSentiment() {
             <Card className="rounded-[2rem] p-8 border-border bg-muted/10 shadow-lg relative overflow-hidden text-left flex flex-col justify-between">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Analysis Target</span>
-                <h2 className="text-xl font-black text-white tracking-tight mb-6">
+                <h2 className="text-xl font-black text-foreground tracking-tight mb-6">
                   {activeQuery.replace(' news sentiment', '').replace(' stock news sentiment', '').replace(' news outlook', '')}
                 </h2>
                 
@@ -332,7 +332,7 @@ function DashboardSentiment() {
                             <span className="text-[10px] font-bold text-muted-foreground uppercase">{domain.replace('www.', '')}</span>
                             <Badge className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded-full border-none", 
                               art.sentiment === 'bullish' ? 'bg-emerald-500 text-black' : 
-                              art.sentiment === 'bearish' ? 'bg-rose-500 text-black' : 'bg-zinc-650 text-white'
+                              art.sentiment === 'bearish' ? 'bg-rose-500 text-black' : 'bg-zinc-650 text-foreground'
                             )}>
                               {art.sentiment}
                             </Badge>
@@ -352,7 +352,7 @@ function DashboardSentiment() {
                           />
                           <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{domain}</span>
                         </div>
-                        <SheetTitle className="text-xl font-black text-white leading-snug">{art.title}</SheetTitle>
+                        <SheetTitle className="text-xl font-black text-foreground leading-snug">{art.title}</SheetTitle>
                         
                         <div className="flex gap-2 items-center mt-2">
                           <a href={art.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300">
@@ -361,7 +361,7 @@ function DashboardSentiment() {
                           <span className="text-zinc-600">|</span>
                           <Badge className={cn("text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full border-none", 
                             art.sentiment === 'bullish' ? 'bg-emerald-500 text-black' : 
-                            art.sentiment === 'bearish' ? 'bg-rose-500 text-black' : 'bg-zinc-650 text-white'
+                            art.sentiment === 'bearish' ? 'bg-rose-500 text-black' : 'bg-zinc-650 text-foreground'
                           )}>
                             {art.sentiment}
                           </Badge>

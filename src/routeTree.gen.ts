@@ -36,6 +36,7 @@ import { Route as DashboardRecommendationsRouteImport } from './routes/dashboard
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
 import { Route as DashboardPaperTradingRouteImport } from './routes/dashboard.paper-trading'
 import { Route as DashboardHeatmapRouteImport } from './routes/dashboard.heatmap'
+import { Route as DashboardEmailAlertsRouteImport } from './routes/dashboard.email-alerts'
 import { Route as DashboardAiRouteImport } from './routes/dashboard.ai'
 import { Route as DashboardStockSymbolRouteImport } from './routes/dashboard.stock.$symbol'
 import { Route as DashboardAiSessionIdRouteImport } from './routes/dashboard.ai.$sessionId'
@@ -176,6 +177,11 @@ const DashboardHeatmapRoute = DashboardHeatmapRouteImport.update({
   path: '/heatmap',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardEmailAlertsRoute = DashboardEmailAlertsRouteImport.update({
+  id: '/email-alerts',
+  path: '/email-alerts',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardAiRoute = DashboardAiRouteImport.update({
   id: '/ai',
   path: '/ai',
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/verify-signup': typeof VerifySignupRoute
   '/dashboard/ai': typeof DashboardAiRouteWithChildren
+  '/dashboard/email-alerts': typeof DashboardEmailAlertsRoute
   '/dashboard/heatmap': typeof DashboardHeatmapRoute
   '/dashboard/paper-trading': typeof DashboardPaperTradingRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/verify-signup': typeof VerifySignupRoute
   '/dashboard/ai': typeof DashboardAiRouteWithChildren
+  '/dashboard/email-alerts': typeof DashboardEmailAlertsRoute
   '/dashboard/heatmap': typeof DashboardHeatmapRoute
   '/dashboard/paper-trading': typeof DashboardPaperTradingRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -276,6 +284,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/verify-signup': typeof VerifySignupRoute
   '/dashboard/ai': typeof DashboardAiRouteWithChildren
+  '/dashboard/email-alerts': typeof DashboardEmailAlertsRoute
   '/dashboard/heatmap': typeof DashboardHeatmapRoute
   '/dashboard/paper-trading': typeof DashboardPaperTradingRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -310,6 +319,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-signup'
     | '/dashboard/ai'
+    | '/dashboard/email-alerts'
     | '/dashboard/heatmap'
     | '/dashboard/paper-trading'
     | '/dashboard/profile'
@@ -341,6 +351,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-signup'
     | '/dashboard/ai'
+    | '/dashboard/email-alerts'
     | '/dashboard/heatmap'
     | '/dashboard/paper-trading'
     | '/dashboard/profile'
@@ -373,6 +384,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-signup'
     | '/dashboard/ai'
+    | '/dashboard/email-alerts'
     | '/dashboard/heatmap'
     | '/dashboard/paper-trading'
     | '/dashboard/profile'
@@ -599,6 +611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardHeatmapRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/email-alerts': {
+      id: '/dashboard/email-alerts'
+      path: '/email-alerts'
+      fullPath: '/dashboard/email-alerts'
+      preLoaderRoute: typeof DashboardEmailAlertsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/ai': {
       id: '/dashboard/ai'
       path: '/ai'
@@ -637,6 +656,7 @@ const DashboardAiRouteWithChildren = DashboardAiRoute._addFileChildren(
 
 interface DashboardRouteChildren {
   DashboardAiRoute: typeof DashboardAiRouteWithChildren
+  DashboardEmailAlertsRoute: typeof DashboardEmailAlertsRoute
   DashboardHeatmapRoute: typeof DashboardHeatmapRoute
   DashboardPaperTradingRoute: typeof DashboardPaperTradingRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
@@ -650,6 +670,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAiRoute: DashboardAiRouteWithChildren,
+  DashboardEmailAlertsRoute: DashboardEmailAlertsRoute,
   DashboardHeatmapRoute: DashboardHeatmapRoute,
   DashboardPaperTradingRoute: DashboardPaperTradingRoute,
   DashboardProfileRoute: DashboardProfileRoute,

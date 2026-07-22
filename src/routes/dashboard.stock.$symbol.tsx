@@ -575,7 +575,7 @@ function StockDetailPage() {
             <Button 
               onClick={() => sendAIMessage()}
               disabled={isLoadingAI || !input.trim()}
-              className="h-9 w-9 shrink-0 rounded-full bg-foreground text-background hover:bg-zinc-800 hover:text-white border-none shadow-md flex items-center justify-center transition-all disabled:opacity-50 mb-1 mr-1"
+              className="h-9 w-9 shrink-0 rounded-full bg-foreground text-background hover:bg-zinc-800 hover:text-foreground border-none shadow-md flex items-center justify-center transition-all disabled:opacity-50 mb-1 mr-1"
             >
               <Send className="h-4 w-4 ml-0.5" />
             </Button>
@@ -627,7 +627,7 @@ function StockDetailPage() {
                 alt={`${symbol} logo`}
               />
             ) : (
-              <div className="h-20 w-20 bg-gradient-to-br from-zinc-700 to-zinc-900 text-white shadow-xl rounded-2xl flex items-center justify-center font-black text-2xl uppercase ring-1 ring-border">
+              <div className="h-20 w-20 bg-gradient-to-br from-zinc-700 to-zinc-900 text-foreground shadow-xl rounded-2xl flex items-center justify-center font-black text-2xl uppercase ring-1 ring-border">
                 {symbol.replace(/[^A-Za-z]/g, '').slice(0, 3) || 'EQ'}
               </div>
             )}
@@ -659,7 +659,7 @@ function StockDetailPage() {
                 <span className="font-bold">Equinox GPT</span>
               </Button>
             ) : (
-              <Button onClick={() => navigate({ to: '/login' })} className="flex gap-2 bg-zinc-900 hover:bg-zinc-850 text-white rounded-2xl h-12 px-6 shadow-md transition-all active:scale-95 border border-border">
+              <Button onClick={() => navigate({ to: '/login' })} className="flex gap-2 bg-muted/40 hover:bg-zinc-850 text-foreground rounded-2xl h-12 px-6 shadow-md transition-all active:scale-95 border border-border">
                 <span className="font-bold">Sign In for AI Analysis</span>
               </Button>
             )}
@@ -726,7 +726,7 @@ function StockDetailPage() {
                   <span className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 block">Overall Sentiment</span>
                   <Badge variant="default" className={cn("text-xl font-black px-6 py-2 rounded-full shadow-sm w-fit", 
                     sentimentData.sentiment === 'BULLISH' ? "bg-foreground text-background" : 
-                    sentimentData.sentiment === 'BEARISH' ? "bg-zinc-600 text-zinc-100" : "bg-zinc-500 text-white"
+                    sentimentData.sentiment === 'BEARISH' ? "bg-zinc-600 text-zinc-100" : "bg-zinc-500 text-foreground"
                   )}>
                     {isAuthenticated ? (sentimentData.sentiment?.toUpperCase() || 'NEUTRAL') : 'LOCKED'}
                   </Badge>
@@ -738,7 +738,7 @@ function StockDetailPage() {
                   </div>
                   {!isAuthenticated && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 text-center z-20">
-                      <p className="text-sm font-black text-white uppercase tracking-wider mb-2">Unlock AI Sentiment Analysis</p>
+                      <p className="text-sm font-black text-foreground uppercase tracking-wider mb-2">Unlock AI Sentiment Analysis</p>
                       <p className="text-xs text-muted-foreground font-semibold mb-4 max-w-xs leading-relaxed">Create a free account or sign in to view real-time AI news summaries and market triggers.</p>
                       <Button asChild className="rounded-xl bg-white hover:bg-zinc-200 text-black font-black text-xs h-9 px-5">
                         <Link to="/login" className="no-underline">Sign In</Link>

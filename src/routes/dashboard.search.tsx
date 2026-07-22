@@ -86,11 +86,10 @@ const getBrandfetchDomain = (name: string, symbol: string) => {
 }
 
 const getCompanyLogo = (name: string, symbol: string) => {
-  const s = symbol.toUpperCase().split('.')[0]
-  if (symbol.includes('.')) {
-    return `https://eodhd.com/img/logos/NSE/${s}.png`
-  }
-  return `https://eodhd.com/img/logos/US/${s}.png`
+  if (!symbol) return ''
+  const clean = symbol.split('.')[0].toUpperCase()
+  const exchange = symbol.toUpperCase().endsWith('.BO') ? 'BSE' : (symbol.includes('.') ? 'NSE' : 'US')
+  return `https://eodhd.com/img/logos/${exchange}/${clean}.png`
 }
 
 const Sparkline = ({ history, changePercent }: { history: number[], changePercent: number }) => {
@@ -224,7 +223,7 @@ function SearchPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Equity Engine</span>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
             Screener
           </h1>
           <p className="text-sm text-muted-foreground font-semibold mt-1">
@@ -243,17 +242,17 @@ function SearchPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search company, ticker or sector..."
-            className="flex-1 bg-transparent border-none text-sm font-bold text-white px-3 py-3 focus:outline-none placeholder:text-muted-foreground"
+            className="flex-1 bg-transparent border-none text-sm font-bold text-foreground px-3 py-3 focus:outline-none placeholder:text-muted-foreground"
           />
           {loading && (
             <span className="mr-3">
-              <Loader2 className="h-5 w-5 text-white animate-spin" />
+              <Loader2 className="h-5 w-5 text-foreground animate-spin" />
             </span>
           )}
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="mr-3 text-xs font-bold text-muted-foreground hover:text-white cursor-pointer px-2 py-1 rounded bg-muted/20"
+              className="mr-3 text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer px-2 py-1 rounded bg-muted/20"
             >
               Clear
             </button>
@@ -275,7 +274,7 @@ function SearchPage() {
                 "px-4 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer whitespace-nowrap",
                 query === sec.name 
                   ? "bg-white text-black border-white shadow-md hover:bg-zinc-100" 
-                  : "bg-muted/10 border-border text-muted-foreground hover:text-white hover:border-zinc-600"
+                  : "bg-muted/10 border-border text-muted-foreground hover:text-foreground hover:border-zinc-600"
               )}
             >
               {sec.label}
@@ -348,12 +347,12 @@ function SearchPage() {
                               }}
                             />
                           ) : (
-                            <div className="h-12 w-12 rounded-3xl bg-zinc-800 flex items-center justify-center text-sm font-black uppercase text-white shrink-0 group-hover:scale-105 transition-transform">
+                            <div className="h-12 w-12 rounded-3xl bg-zinc-800 flex items-center justify-center text-sm font-black uppercase text-foreground shrink-0 group-hover:scale-105 transition-transform">
                               {item.symbol.replace(/[^A-Za-z]/g, '').slice(0,2) || 'EQ'}
                             </div>
                           )}
                           <div className="overflow-hidden">
-                            <h4 className="font-extrabold text-white text-sm tracking-tight truncate">{item.symbol}</h4>
+                            <h4 className="font-extrabold text-foreground text-sm tracking-tight truncate">{item.symbol}</h4>
                             <p className="text-[10px] font-bold text-muted-foreground truncate mt-0.5">{item.name}</p>
                           </div>
                         </div>
@@ -366,7 +365,7 @@ function SearchPage() {
                         )}
 
                         <div className="text-right shrink-0 pl-1">
-                          <p className="font-black text-white text-sm">{convert(item.price).formatted}</p>
+                          <p className="font-black text-foreground text-sm">{convert(item.price).formatted}</p>
                           <span className={cn(
                             "text-[10px] font-bold flex items-center gap-0.5 justify-end mt-0.5",
                             isPositive ? "text-emerald-500" : "text-rose-500"
@@ -393,7 +392,7 @@ function SearchPage() {
                     key={s}
                     variant="secondary"
                     onClick={() => handleRecentClick(s)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold transition border border-border cursor-pointer bg-muted/10 text-muted-foreground hover:text-white"
+                    className="px-4 py-2 rounded-xl text-xs font-bold transition border border-border cursor-pointer bg-muted/10 text-muted-foreground hover:text-foreground"
                   >
                     {s}
                   </Button>
@@ -442,7 +441,7 @@ function SearchPage() {
                             navigate({ to: '/dashboard/stock/$symbol', params: { symbol: item.symbol }}) 
                           }}
                         >
-                          <td className="px-8 py-5 whitespace-nowrap font-black text-white">
+                          <td className="px-8 py-5 whitespace-nowrap font-black text-foreground">
                             <div className="flex items-center gap-3.5">
                               {logoUrl ? (
                                 <img 
@@ -469,7 +468,7 @@ function SearchPage() {
                                   }}
                                 />
                               ) : (
-                                <div className="h-10 w-10 rounded-2xl bg-zinc-800 flex items-center justify-center text-xs font-black uppercase text-white shrink-0 group-hover:scale-105 transition-transform">
+                                <div className="h-10 w-10 rounded-2xl bg-zinc-800 flex items-center justify-center text-xs font-black uppercase text-foreground shrink-0 group-hover:scale-105 transition-transform">
                                   {item.symbol.replace(/[^A-Za-z]/g, '').slice(0,2) || 'EQ'}
                                 </div>
                               )}
@@ -490,7 +489,7 @@ function SearchPage() {
                           <td className="px-8 py-5 whitespace-nowrap text-right">
                             <Badge variant="secondary" className="font-bold text-[10px]">{item.typeDisp}</Badge>
                           </td>
-                          <td className="px-8 py-5 whitespace-nowrap text-right text-muted-foreground group-hover:text-white transition-colors">
+                          <td className="px-8 py-5 whitespace-nowrap text-right text-muted-foreground group-hover:text-foreground transition-colors">
                             <ArrowUpRight className="h-4.5 w-4.5 inline" />
                           </td>
                         </tr>
@@ -542,12 +541,12 @@ function SearchPage() {
                             }}
                           />
                         ) : (
-                          <div className="h-12 w-12 rounded-3xl bg-zinc-800 flex items-center justify-center text-sm font-black uppercase text-white shrink-0">
+                          <div className="h-12 w-12 rounded-3xl bg-zinc-800 flex items-center justify-center text-sm font-black uppercase text-foreground shrink-0">
                             {item.symbol.replace(/[^A-Za-z]/g, '').slice(0,2) || 'EQ'}
                           </div>
                         )}
                         <div className="overflow-hidden">
-                          <h4 className="font-extrabold text-white text-sm tracking-tight truncate flex items-center gap-1.5">
+                          <h4 className="font-extrabold text-foreground text-sm tracking-tight truncate flex items-center gap-1.5">
                             {item.symbol}
                             <Badge variant="outline" className="text-[8px] font-black uppercase scale-90 px-1.5 border-border/50">{item.exchDisp}</Badge>
                           </h4>
@@ -559,7 +558,7 @@ function SearchPage() {
                       </div>
                       
                       <div className="shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-muted/20 border border-border">
-                        <ChevronRight className="h-4 w-4 text-white" />
+                        <ChevronRight className="h-4 w-4 text-foreground" />
                       </div>
                     </Card>
                   )

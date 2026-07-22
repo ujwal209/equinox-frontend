@@ -14,7 +14,14 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Compass,
-  Zap
+  Zap,
+  Briefcase,
+  Mail,
+  TrendingUp,
+  MessageSquare,
+  ShieldCheck,
+  ChevronRight,
+  BarChart3
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -55,50 +62,11 @@ interface HeatmapSector {
   companies: HeatmapCompany[]
 }
 
-const getBrandfetchDomain = (name: string, symbol: string) => {
-  const n = name.toLowerCase()
-  const s = symbol.toUpperCase().split('.')[0]
-  const map: Record<string, string> = {
-    'RELIANCE': 'ril.com',
-    'TCS': 'tcs.com',
-    'INFY': 'infosys.com',
-    'HDFCBANK': 'hdfcbank.com',
-    'ICICIBANK': 'icicibank.com',
-    'WIPRO': 'wipro.com',
-    'ADANIENT': 'adani.com',
-    'ADANIPORTS': 'adani.com',
-    'ADANIENSOL': 'adani.com',
-    'WOCKPHARMA': 'wockhardt.com',
-    'AAPL': 'apple.com',
-    'MSFT': 'microsoft.com',
-    'NVDA': 'nvidia.com',
-    'GOOGL': 'google.com',
-    'GOOG': 'google.com',
-    'AMZN': 'amazon.com',
-    'TSLA': 'tesla.com',
-    'META': 'meta.com',
-    'NFLX': 'netflix.com'
-  }
-  
-  return map[s] || (
-    n.includes('reliance') ? 'ril.com' :
-    n.includes('tata consultancy') || n.includes('tcs') ? 'tcs.com' :
-    n.includes('infosys') ? 'infosys.com' :
-    n.includes('hdfc') ? 'hdfcbank.com' :
-    n.includes('icici') ? 'icicibank.com' :
-    n.includes('wipro') ? 'wipro.com' :
-    n.includes('adani') ? 'adani.com' :
-    n.includes('wockhardt') || n.includes('wockpharma') ? 'wockhardt.com' :
-    !symbol.includes('.') ? `${s.toLowerCase()}.com` : null
-  )
-}
-
 const getCompanyLogo = (name: string, symbol: string) => {
-  const s = symbol.toUpperCase().split('.')[0]
-  if (symbol.includes('.')) {
-    return `https://eodhd.com/img/logos/NSE/${s}.png`
-  }
-  return `https://eodhd.com/img/logos/US/${s}.png`
+  if (!symbol) return ''
+  const clean = symbol.split('.')[0].toUpperCase()
+  const exchange = symbol.toUpperCase().endsWith('.BO') ? 'BSE' : (symbol.includes('.') ? 'NSE' : 'US')
+  return `https://eodhd.com/img/logos/${exchange}/${clean}.png`
 }
 
 const Sparkline = ({ history, changePercent }: { history: number[], changePercent: number }) => {
@@ -152,7 +120,7 @@ function LandingPage() {
   // Active Terminal Tab
   const [activeTab, setActiveTab] = useState<'screener' | 'heatmap' | 'indices'>('screener')
 
-  // Reusable screener and heatmap state
+  // Screener & live state
   const [screenerQuery, setScreenerQuery] = useState('')
   const [screenerResults, setScreenerResults] = useState<TickerMatch[]>([])
   const [screenerLoading, setScreenerLoading] = useState(false)
@@ -165,9 +133,7 @@ function LandingPage() {
   const [sectorSearch, setSectorSearch] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [heatmapLoading, setHeatmapLoading] = useState(true)
-  const [heatmapRefreshKey, setHeatmapRefreshKey] = useState(0)
 
-  // Handle outside click to close hero dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (heroDropdownRef.current && !heroDropdownRef.current.contains(event.target as Node)) {
@@ -178,7 +144,7 @@ function LandingPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  // Hero Debounced Search
+  // Hero Search Debounce
   useEffect(() => {
     if (!heroQuery.trim()) {
       setHeroResults([])
@@ -206,7 +172,7 @@ function LandingPage() {
     return () => clearTimeout(delayDebounce)
   }, [heroQuery])
 
-  // Screener Debounced Search
+  // Screener Debounce
   useEffect(() => {
     if (!screenerQuery.trim()) {
       setScreenerResults([])
@@ -233,396 +199,323 @@ function LandingPage() {
     return () => clearTimeout(delayDebounce)
   }, [screenerQuery])
 
-  // Fetch Live Trends (Screener + Indices Tab)
-  const fetchLiveTrends = async () => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/market/live`)
-      if (res.ok) {
-        const data = await res.json()
-        setLiveAssets(data)
-      }
-    } catch (err) {
-      console.error('Live data fetch failed:', err)
-    } finally {
-      setLiveLoading(false)
-    }
-  }
-
+  // Fetch Live Assets
   useEffect(() => {
+    async function fetchLiveTrends() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/market/live`)
+        if (res.ok) {
+          const data = await res.json()
+          setLiveAssets(data)
+        }
+      } catch (err) {
+        console.error('Live data fetch failed:', err)
+      } finally {
+        setLiveLoading(false)
+      }
+    }
     fetchLiveTrends()
   }, [])
 
   // Fetch Heatmap Metadata
-  const fetchHeatmapData = async () => {
-    setHeatmapLoading(true)
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/market/heatmap`)
-      if (res.ok) {
-        const json = await res.json()
-        setSectors(json)
-        if (json.length > 0 && !selectedSector) setSelectedSector(json[0].sector)
-      }
-    } catch (err) {
-      console.error('Heatmap meta fail:', err)
-    } finally {
-      setHeatmapLoading(false)
-    }
-  }
-
   useEffect(() => {
+    async function fetchHeatmapData() {
+      setHeatmapLoading(true)
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/market/heatmap`)
+        if (res.ok) {
+          const json = await res.json()
+          setSectors(json)
+          if (json.length > 0 && !selectedSector) setSelectedSector(json[0].sector)
+        }
+      } catch (err) {
+        console.error('Heatmap meta fail:', err)
+      } finally {
+        setHeatmapLoading(false)
+      }
+    }
     fetchHeatmapData()
-  }, [heatmapRefreshKey])
+  }, [])
 
   return (
-    <main className="min-h-screen bg-[var(--bg-base)] flex flex-col pt-8 pb-24 px-4 sm:px-6 relative overflow-hidden">
+    <main className="min-h-screen bg-background flex flex-col pt-6 sm:pt-10 pb-28 px-4 sm:px-6 md:px-8 relative overflow-x-hidden text-left">
       
-      {/* Decorative Blur Orbs */}
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-zinc-500/5 rounded-full blur-[130px] pointer-events-none" />
-      <div className="absolute top-[40%] -right-40 w-[600px] h-[600px] bg-zinc-500/5 rounded-full blur-[140px] pointer-events-none" />
+      {/* Background Lighting Gradients */}
+      <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-zinc-500/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-[45%] -right-40 w-[600px] h-[600px] bg-zinc-500/5 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col items-center relative z-10">
+      <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col items-center relative z-10 space-y-16 sm:space-y-24">
         
-        {/* Hero Section */}
-        <div className="text-center space-y-6 mb-12 max-w-4xl mx-auto mt-8 flex flex-col items-center">
-          <Badge variant="secondary" className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-zinc-900 border border-zinc-800 text-zinc-400">
-            Real-Time Market Terminal
-          </Badge>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight text-white leading-[1.05]">
-            Global Markets. <br />Decentralized Intelligence.
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto font-semibold mt-2">
-            Experience premium financial tools without boundaries. Screen thousands of global equities, analyze sectors via high-performance heatmaps, and track international indices—completely free for guests.
-          </p>
-        </div>
-
-        {/* Global Terminal Search */}
-        <div className="w-full max-w-2xl mx-auto relative mb-20 z-40" ref={heroDropdownRef}>
-          <div className="relative group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-white transition-colors" />
-            <Input
-              type="text"
-              value={heroQuery}
-              onChange={(e) => {
-                setHeroQuery(e.target.value)
-                setShowHeroDropdown(true)
-              }}
-              onFocus={() => {
-                if (heroQuery.trim().length > 0) setShowHeroDropdown(true)
-              }}
-              placeholder="Search companies, ticker symbols, or crypto (e.g. Apple, Reliance)..."
-              className="w-full pl-14 pr-12 py-6 h-14 rounded-2xl border-border bg-muted/5 text-white text-base placeholder:text-muted-foreground focus-visible:border-zinc-500 focus-visible:ring-white/5 transition-all shadow-xl backdrop-blur-md"
-            />
-            {heroLoading && (
-              <span className="absolute right-5 top-1/2 -translate-y-1/2">
-                <Loader2 className="h-5 w-5 text-white animate-spin" />
+        {/* 1. Hero Split Layout */}
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center pt-4 sm:pt-8">
+          
+          {/* Hero Left Column */}
+          <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border bg-card shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                Equinox Financial Engine
               </span>
-            )}
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-foreground leading-[1.05]">
+              Precision Stock Analytics & Execution.
+            </h1>
+
+            <p className="text-base sm:text-lg text-muted-foreground font-semibold leading-relaxed max-w-2xl">
+              Screen Indian (NSE/BSE) and US equities, analyze sector momentum with heatmaps, track live market indices, and execute paper trades with zero risk.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <Link to={isAuthenticated ? "/dashboard" : "/login"}>
+                <Button className="rounded-2xl bg-primary text-primary-foreground font-black px-7 h-12 text-sm cursor-pointer shadow-xl hover:opacity-90 transition-all flex items-center gap-2">
+                  {isAuthenticated ? "Launch Dashboard" : "Get Started Free"} <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link to="/dashboard/search">
+                <Button variant="outline" className="rounded-2xl border-border bg-card hover:bg-muted text-foreground font-bold px-6 h-12 text-sm cursor-pointer flex items-center gap-2">
+                  <Compass className="h-4 w-4" /> Stock Screener
+                </Button>
+              </Link>
+            </div>
+
+            {/* Quick stats pills */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border/60 max-w-lg">
+              <div>
+                <span className="text-2xl sm:text-3xl font-black text-foreground block">5,000+</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Equities Screened</span>
+              </div>
+              <div>
+                <span className="text-2xl sm:text-3xl font-black text-foreground block">9:15-3:30</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">IST Market Hours</span>
+              </div>
+              <div>
+                <span className="text-2xl sm:text-3xl font-black text-foreground block">100%</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Free Access</span>
+              </div>
+            </div>
           </div>
 
-          {/* Autocomplete Dropdown */}
-          {showHeroDropdown && heroQuery.trim().length > 0 && (
-            <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-zinc-950 border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 max-h-[350px] overflow-y-auto z-50 divide-y divide-border/60">
-              {heroLoading && heroResults.length === 0 ? (
-                <div className="p-6 text-center text-muted-foreground text-sm font-semibold flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Querying Database...
+          {/* Hero Right Column: Interactive Search Terminal Box */}
+          <div className="lg:col-span-5 w-full">
+            <Card className="rounded-[2.5rem] border border-border bg-card/80 backdrop-blur-2xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden text-left" ref={heroDropdownRef}>
+              <div className="flex items-center justify-between border-b border-border pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-8 w-8 rounded-xl bg-muted border border-border flex items-center justify-center text-foreground font-black text-xs">
+                    EQ
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-wider text-foreground">Stock Screener</h3>
+                    <p className="text-[10px] font-bold text-muted-foreground">Instant Ticker Search</p>
+                  </div>
                 </div>
-              ) : heroResults.length === 0 ? (
-                <div className="p-6 text-center text-muted-foreground text-sm font-semibold">
-                  No matching assets found for "{heroQuery}"
-                </div>
-              ) : (
-                <div className="flex flex-col p-1.5">
-                  {heroResults.map((r, i) => {
-                    const logoUrl = getCompanyLogo(r.name, r.symbol)
-                    return (
-                      <Link
-                        key={`${r.symbol}-${i}`}
-                        to="/stock/$symbol"
-                        params={{ symbol: r.symbol }}
-                        className="flex items-center justify-between p-3.5 rounded-xl hover:bg-muted/10 transition-colors group no-underline text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          {logoUrl ? (
+                <Badge variant="outline" className="text-[9px] font-black uppercase px-2.5 py-0.5 border-border bg-muted/40">
+                  Live
+                </Badge>
+              </div>
+
+              {/* Terminal Search Input */}
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+                <Input
+                  type="text"
+                  value={heroQuery}
+                  onChange={(e) => {
+                    setHeroQuery(e.target.value)
+                    setShowHeroDropdown(true)
+                  }}
+                  onFocus={() => {
+                    if (heroQuery.trim().length > 0) setShowHeroDropdown(true)
+                  }}
+                  placeholder="Search TCS, Reliance, Apple..."
+                  className="w-full pl-11 pr-10 py-5 h-12 rounded-xl border-border bg-muted/30 text-foreground text-sm font-bold placeholder:text-muted-foreground focus-visible:border-zinc-500 outline-none transition-all shadow-inner"
+                />
+                {heroLoading && (
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-4 w-4 text-foreground animate-spin" />
+                  </span>
+                )}
+              </div>
+
+              {/* Search Dropdown Results */}
+              {showHeroDropdown && heroQuery.trim().length > 0 && (
+                <div className="bg-card border border-border rounded-xl shadow-xl overflow-hidden max-h-[260px] overflow-y-auto divide-y divide-border">
+                  {heroLoading && heroResults.length === 0 ? (
+                    <div className="p-4 text-center text-muted-foreground text-xs font-bold flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Querying exchange...
+                    </div>
+                  ) : heroResults.length === 0 ? (
+                    <div className="p-4 text-center text-muted-foreground text-xs font-bold">
+                      No matching stocks found for "{heroQuery}"
+                    </div>
+                  ) : (
+                    heroResults.map((r, i) => {
+                      const logoUrl = getCompanyLogo(r.name, r.symbol)
+                      return (
+                        <Link
+                          key={`${r.symbol}-${i}`}
+                          to="/dashboard/stock/$symbol"
+                          params={{ symbol: r.symbol }}
+                          className="flex items-center justify-between p-3 hover:bg-muted/40 transition-colors group no-underline text-left"
+                        >
+                          <div className="flex items-center gap-3">
                             <img 
                               src={logoUrl} 
                               alt="" 
-                              className="h-8 w-8 rounded-lg bg-white object-contain p-0.5 border border-black/10 shrink-0 shadow-sm"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                const s = r.symbol.toUpperCase().split('.')[0];
-                                if (target.src.includes(`/NSE/${s}.png`)) {
-                                  target.src = `https://eodhd.com/img/logos/NSE/${s.toLowerCase()}.png`;
-                                } else if (target.src.includes(`/US/${s}.png`)) {
-                                  target.src = `https://eodhd.com/img/logos/US/${s.toLowerCase()}.png`;
-                                } else if (target.src.includes('eodhd.com')) {
-                                  const domain = getBrandfetchDomain(r.name, r.symbol);
-                                  if (domain) {
-                                    target.src = `https://cdn.brandfetch.io/domain/${domain}?c=1idlu8B6H0L485PeI84`;
-                                  } else {
-                                    target.style.display = 'none';
-                                  }
-                                } else {
-                                  target.style.display = 'none';
-                                }
-                              }}
+                              className="h-7 w-7 rounded-lg bg-white object-contain p-0.5 border border-border shrink-0"
+                              onError={(e) => { (e.target as HTMLElement).style.display = 'none' }}
                             />
-                          ) : (
-                            <div className="h-8 w-8 rounded-lg bg-zinc-800 flex items-center justify-center text-[10px] font-black uppercase text-white shrink-0">
-                              {r.symbol.replace(/[^A-Za-z]/g, '').slice(0, 2) || 'EQ'}
+                            <div>
+                              <span className="font-black text-foreground text-xs block">{r.symbol}</span>
+                              <span className="text-[10px] font-bold text-muted-foreground block truncate max-w-[160px]">{r.name}</span>
                             </div>
-                          )}
-                          <div>
-                            <span className="font-extrabold text-white text-sm tracking-tight block">{r.symbol}</span>
-                            <span className="text-[10px] font-bold text-muted-foreground mt-0.5 block truncate max-w-[240px]">{r.name}</span>
                           </div>
-                        </div>
-                        <Badge variant="outline" className="text-[9px] font-black uppercase bg-background px-2.5 py-0.5 border-border/80 h-auto">
-                          {r.exchDisp}
-                        </Badge>
-                      </Link>
-                    )
-                  })}
+                          <Badge variant="outline" className="text-[8px] font-black uppercase bg-muted/40 border-border">
+                            {r.exchDisp}
+                          </Badge>
+                        </Link>
+                      )
+                    })
+                  )}
                 </div>
               )}
-            </div>
-          )}
+
+              {/* Quick Preset Symbol Chips */}
+              <div className="space-y-2 pt-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground block">Popular Indian Equities</span>
+                <div className="flex flex-wrap gap-2">
+                  {['TCS.NS', 'RELIANCE.NS', 'INFY.NS', 'HDFCBANK.NS', 'WIPRO.NS'].map((sym) => (
+                    <Link 
+                      key={sym} 
+                      to="/dashboard/stock/$symbol" 
+                      params={{ symbol: sym }}
+                      className="px-3 py-1.5 rounded-xl bg-muted/40 border border-border text-xs font-black text-foreground hover:bg-muted/80 transition-colors cursor-pointer"
+                    >
+                      {sym.replace('.NS', '')}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+
         </div>
 
-        {/* Embedded Financial Terminal Panel */}
-        <div className="w-full bg-muted/10 border border-border/80 rounded-[2.5rem] p-6 sm:p-8 backdrop-blur-3xl shadow-2xl relative mb-16">
-          <div className="absolute top-6 right-8 hidden sm:flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-zinc-500">
-            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" /> Live guest session
+        {/* 2. Embedded Financial Terminal Suite */}
+        <div className="w-full bg-card border border-border rounded-[2.5rem] p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6 mb-8">
+            <div>
+              <h2 className="text-xl font-black text-foreground tracking-tight">Market Intelligence Terminal</h2>
+              <p className="text-xs font-semibold text-muted-foreground mt-0.5">Explore equities, heatmaps, and global indices in real time.</p>
+            </div>
+
+            {/* Terminal Navigation Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+              <button
+                onClick={() => setActiveTab('screener')}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2",
+                  activeTab === 'screener' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <Compass className="h-4 w-4" /> Screener
+              </button>
+              <button
+                onClick={() => setActiveTab('heatmap')}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2",
+                  activeTab === 'heatmap' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <LayoutGrid className="h-4 w-4" /> Sector Heatmap
+              </button>
+              <button
+                onClick={() => setActiveTab('indices')}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2",
+                  activeTab === 'indices' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <Globe className="h-4 w-4" /> Global Indices
+              </button>
+            </div>
           </div>
 
-          {/* Terminal Tabs */}
-          <div className="flex items-center border-b border-border/40 pb-4 mb-8 overflow-x-auto no-scrollbar gap-2">
-            <button
-              onClick={() => setActiveTab('screener')}
-              className={cn(
-                "px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2",
-                activeTab === 'screener' ? "bg-white text-black shadow-md" : "text-muted-foreground hover:text-white hover:bg-muted/10"
-              )}
-            >
-              <Compass className="h-4 w-4" /> Screener
-            </button>
-            <button
-              onClick={() => setActiveTab('heatmap')}
-              className={cn(
-                "px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2",
-                activeTab === 'heatmap' ? "bg-white text-black shadow-md" : "text-muted-foreground hover:text-white hover:bg-muted/10"
-              )}
-            >
-              <LayoutGrid className="h-4 w-4" /> Market Heatmap
-            </button>
-            <button
-              onClick={() => setActiveTab('indices')}
-              className={cn(
-                "px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2",
-                activeTab === 'indices' ? "bg-white text-black shadow-md" : "text-muted-foreground hover:text-white hover:bg-muted/10"
-              )}
-            >
-              <Globe className="h-4 w-4" /> Global Indices
-            </button>
-          </div>
-
-          {/* Tab Render Switchboard */}
+          {/* Tab Render Content */}
           <div>
             
-            {/* 1. SCREENER TAB */}
+            {/* SCREENER TAB */}
             {activeTab === 'screener' && (
-              <div className="space-y-8 animate-in fade-in duration-200 text-left">
-                <div className="relative flex items-center bg-muted/10 border border-border/80 rounded-2xl p-1.5 focus-within:border-zinc-500 transition-all max-w-xl shadow-lg">
-                  <Search className="h-4.5 w-4.5 text-muted-foreground ml-3 shrink-0" />
-                  <input
-                    type="text"
-                    value={screenerQuery}
-                    onChange={(e) => setScreenerQuery(e.target.value)}
-                    placeholder="Search database (e.g. Wockhardt, Reliance)..."
-                    className="flex-1 bg-transparent border-none text-xs font-bold text-white px-3 py-2.5 focus:outline-none placeholder:text-muted-foreground"
-                  />
-                  {screenerLoading && <Loader2 className="h-4.5 w-4.5 text-white animate-spin mr-3" />}
-                </div>
-
-                {/* Show Live Market Trends when there's no screener search query */}
-                {!screenerQuery && (
-                  <div className="space-y-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 pl-1">
-                      <ArrowUpRight className="h-4 w-4" /> Live Market Trends
-                    </span>
-                    {liveLoading ? (
-                      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                        {[1, 2, 3].map((n) => (
-                          <Card key={n} className="border-border bg-muted/5 p-6 rounded-[2rem] h-24 flex items-center justify-between animate-pulse">
-                            <div className="space-y-2 w-1/3">
-                              <div className="h-4 w-16 bg-zinc-800 rounded" />
-                              <div className="h-3 w-24 bg-zinc-800 rounded" />
-                            </div>
-                            <div className="h-8 w-24 bg-zinc-850 rounded" />
-                          </Card>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                        {liveAssets.filter(item => !item.symbol.startsWith('^')).slice(0, 6).map((item) => {
-                          const isPositive = item.changePercent >= 0
-                          const logoUrl = getCompanyLogo(item.name, item.symbol)
-                          return (
-                            <Card 
-                              key={item.symbol} 
-                              className="border-border bg-muted/10 hover:border-zinc-650 hover:bg-muted/20 transition-all duration-300 rounded-[2rem] p-6 flex items-center justify-between cursor-pointer group hover:-translate-y-1 hover:shadow-lg"
-                              onClick={() => navigate({ to: '/stock/$symbol', params: { symbol: item.symbol }})}
-                            >
-                              <div className="flex items-center gap-4 overflow-hidden flex-1">
-                                {logoUrl ? (
-                                  <img 
-                                    src={logoUrl} 
-                                    alt="" 
-                                    className="h-12 w-12 rounded-3xl bg-white object-contain p-1 shrink-0 shadow-sm border border-black/10"
-                                    onError={(e) => {
-                                      const target = e.target as HTMLImageElement;
-                                      const s = item.symbol.toUpperCase().split('.')[0];
-                                      if (target.src.includes(`/NSE/${s}.png`)) {
-                                        target.src = `https://eodhd.com/img/logos/NSE/${s.toLowerCase()}.png`;
-                                      } else if (target.src.includes(`/US/${s}.png`)) {
-                                        target.src = `https://eodhd.com/img/logos/US/${s.toLowerCase()}.png`;
-                                      } else if (target.src.includes('eodhd.com')) {
-                                        const domain = getBrandfetchDomain(item.name, item.symbol);
-                                        if (domain) {
-                                          target.src = `https://cdn.brandfetch.io/domain/${domain}?c=1idlu8B6H0L485PeI84`;
-                                        } else {
-                                          target.style.display = 'none';
-                                        }
-                                      } else {
-                                        target.style.display = 'none';
-                                      }
-                                    }}
-                                  />
-                                ) : (
-                                  <div className="h-12 w-12 rounded-3xl bg-zinc-800 flex items-center justify-center text-sm font-black uppercase text-white shrink-0">
-                                    {item.symbol.replace(/[^A-Za-z]/g, '').slice(0, 2) || 'EQ'}
-                                  </div>
-                                )}
-                                <div className="overflow-hidden">
-                                  <h4 className="font-extrabold text-white text-sm tracking-tight truncate">{item.symbol}</h4>
-                                  <p className="text-[10px] font-bold text-muted-foreground truncate mt-0.5">{item.name}</p>
-                                </div>
-                              </div>
-                              <div className="text-right shrink-0 pl-1">
-                                <p className="font-black text-white text-sm">{convert(item.price).formatted}</p>
-                                <span className={cn(
-                                  "text-[10px] font-bold flex items-center gap-0.5 justify-end mt-0.5",
-                                  isPositive ? "text-emerald-500" : "text-rose-500"
-                                )}>
-                                  {isPositive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                                  {isPositive ? '+' : ''}{item.changePercent.toFixed(2)}%
-                                </span>
-                              </div>
-                            </Card>
-                          )
-                        })}
-                      </div>
-                    )}
+              <div className="space-y-6 text-left animate-in fade-in duration-200">
+                
+                {/* Live Market Assets Grid */}
+                {liveLoading ? (
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <Card key={n} className="border border-border bg-muted/20 p-5 rounded-2xl h-20 animate-pulse" />
+                    ))}
                   </div>
-                )}
-
-                {/* Search Results Display */}
-                {screenerQuery && (
-                  <div className="space-y-4">
-                    {screenerResults.length === 0 && !screenerLoading ? (
-                      <div className="text-center py-16 border border-dashed border-border rounded-[2rem] bg-muted/5">
-                        <Building2 className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-40" />
-                        <p className="text-xs font-bold text-muted-foreground">No matches found for "{screenerQuery}".</p>
-                      </div>
-                    ) : (
-                      <div className="rounded-[2rem] border border-border bg-muted/15 shadow-sm overflow-hidden">
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-xs text-left">
-                            <thead className="bg-muted/30 text-muted-foreground border-b border-border">
-                              <tr>
-                                <th className="px-6 py-4 font-black uppercase tracking-wider text-[9px]">Symbol</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-wider text-[9px]">Name</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-wider text-[9px]">Sector</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-wider text-[9px] text-right">Exchange</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border">
-                              {screenerResults.map((item, idx) => {
-                                const logoUrl = getCompanyLogo(item.name, item.symbol)
-                                return (
-                                  <tr 
-                                    key={`${item.symbol}-${idx}`} 
-                                    className="hover:bg-muted/20 transition-colors group cursor-pointer" 
-                                    onClick={() => navigate({ to: '/stock/$symbol', params: { symbol: item.symbol }})}
-                                  >
-                                    <td className="px-6 py-4 whitespace-nowrap font-black text-white">
-                                      <div className="flex items-center gap-3">
-                                        {logoUrl ? (
-                                          <img 
-                                            src={logoUrl} 
-                                            alt="" 
-                                            className="h-10 w-10 rounded-2xl bg-white object-contain p-0.5 shrink-0 shadow-sm border border-black/10"
-                                            onError={(e) => {
-                                              const target = e.target as HTMLImageElement;
-                                              const s = item.symbol.toUpperCase().split('.')[0];
-                                              if (target.src.includes(`/NSE/${s}.png`)) {
-                                                target.src = `https://eodhd.com/img/logos/NSE/${s.toLowerCase()}.png`;
-                                              } else if (target.src.includes(`/US/${s}.png`)) {
-                                                target.src = `https://eodhd.com/img/logos/US/${s.toLowerCase()}.png`;
-                                              } else if (target.src.includes('eodhd.com')) {
-                                                const domain = getBrandfetchDomain(item.name, item.symbol);
-                                                if (domain) {
-                                                  target.src = `https://cdn.brandfetch.io/domain/${domain}?c=1idlu8B6H0L485PeI84`;
-                                                } else {
-                                                  target.style.display = 'none';
-                                                }
-                                              } else {
-                                                target.style.display = 'none';
-                                              }
-                                            }}
-                                          />
-                                        ) : (
-                                          <div className="h-10 w-10 rounded-2xl bg-zinc-800 flex items-center justify-center text-xs font-black uppercase text-white shrink-0">
-                                            {item.symbol.replace(/[^A-Za-z]/g, '').slice(0, 2) || 'EQ'}
-                                          </div>
-                                        )}
-                                        {item.symbol}
-                                      </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-muted-foreground font-semibold truncate max-w-[200px]">{item.name}</td>
-                                    <td className="px-6 py-4 font-black uppercase tracking-wider text-[9px] text-muted-foreground">{item.sector || 'Equity'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right font-bold">{item.exchDisp}</td>
-                                  </tr>
-                                )
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
+                ) : (
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    {liveAssets.filter(item => !item.symbol.startsWith('^')).slice(0, 6).map((item) => {
+                      const isPositive = item.changePercent >= 0
+                      const logoUrl = getCompanyLogo(item.name, item.symbol)
+                      return (
+                        <Card 
+                          key={item.symbol} 
+                          className="border border-border bg-muted/20 hover:border-zinc-500/50 hover:bg-muted/40 transition-all rounded-2xl p-5 flex items-center justify-between cursor-pointer group shadow-sm"
+                          onClick={() => navigate({ to: '/dashboard/stock/$symbol', params: { symbol: item.symbol }})}
+                        >
+                          <div className="flex items-center gap-3 overflow-hidden flex-1">
+                            <img 
+                              src={logoUrl} 
+                              alt="" 
+                              className="h-9 w-9 rounded-xl bg-white object-contain p-1 shrink-0 border border-border shadow-sm"
+                              onError={(e) => { (e.target as HTMLElement).style.display = 'none' }}
+                            />
+                            <div className="overflow-hidden">
+                              <h4 className="font-black text-foreground text-sm tracking-tight truncate">{item.symbol}</h4>
+                              <p className="text-[10px] font-bold text-muted-foreground truncate">{item.name}</p>
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0 pl-2">
+                            <p className="font-black text-foreground text-sm">{convert(item.price).formatted}</p>
+                            <span className={cn(
+                              "text-[10px] font-bold flex items-center gap-0.5 justify-end mt-0.5",
+                              isPositive ? "text-emerald-500" : "text-rose-500"
+                            )}>
+                              {isPositive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                              {isPositive ? '+' : ''}{item.changePercent.toFixed(2)}%
+                            </span>
+                          </div>
+                        </Card>
+                      )
+                    })}
                   </div>
                 )}
               </div>
             )}
 
-            {/* 2. HEATMAP TAB */}
+            {/* HEATMAP TAB */}
             {activeTab === 'heatmap' && (
-              <div className="space-y-8 animate-in fade-in duration-200 text-left">
+              <div className="space-y-6 text-left animate-in fade-in duration-200">
                 {heatmapLoading ? (
-                  <div className="flex flex-col items-center justify-center py-16 gap-3">
-                    <Loader2 className="h-6 w-6 text-white animate-spin" />
-                    <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Loading Heatmap Matrix...</p>
+                  <div className="flex flex-col items-center justify-center py-12 gap-3">
+                    <Loader2 className="h-6 w-6 text-foreground animate-spin" />
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Loading Sector Heatmap...</p>
                   </div>
                 ) : (
                   <>
-                    {/* Searchable Sector Dropdown */}
+                    {/* Sector Selector */}
                     {sectors.length > 0 && (
-                      <div className="relative z-50">
+                      <div className="relative z-30 max-w-sm">
                         <button
                           onClick={() => setDropdownOpen(!dropdownOpen)}
-                          className="flex items-center justify-between w-full md:w-96 px-5 py-3 bg-zinc-900/60 border border-border/80 rounded-2xl text-sm font-bold text-white cursor-pointer hover:bg-zinc-800/80 transition-all shadow-md"
+                          className="flex items-center justify-between w-full px-4 py-2.5 bg-muted/40 border border-border rounded-xl text-xs font-bold text-foreground cursor-pointer hover:bg-muted transition-all shadow-sm"
                         >
                           <span className="flex items-center gap-2">
-                            <Layers className="h-4.5 w-4.5 text-muted-foreground" />
+                            <Layers className="h-4 w-4 text-muted-foreground" />
                             {selectedSector || "Select Sector..."}
                           </span>
                           <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-200", dropdownOpen && "rotate-180")} />
@@ -630,38 +523,25 @@ function LandingPage() {
 
                         {dropdownOpen && (
                           <>
-                            <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                            <div className="absolute left-0 mt-2 w-full md:w-96 bg-zinc-950 border border-border rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                              <div className="relative flex items-center mb-3">
-                                <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
-                                <input
-                                  type="text"
-                                  placeholder="Search sectors..."
-                                  value={sectorSearch}
-                                  onChange={(e) => setSectorSearch(e.target.value)}
-                                  className="w-full pl-9 pr-4 py-2 bg-zinc-900 border border-border/60 rounded-xl text-xs font-semibold text-white placeholder-muted-foreground focus:outline-none focus:border-white/40 transition-colors"
-                                />
-                              </div>
-                              <div className="max-h-60 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
-                                {sectors
-                                  .filter((s) => s.sector.toLowerCase().includes(sectorSearch.toLowerCase()))
-                                  .map((sec) => (
-                                    <button
-                                      key={sec.sector}
-                                      onClick={() => {
-                                        setSelectedSector(sec.sector)
-                                        setDropdownOpen(false)
-                                        setSectorSearch('')
-                                      }}
-                                      className={cn(
-                                        "flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-xs font-bold text-left transition-all cursor-pointer",
-                                        selectedSector === sec.sector ? "bg-white text-black" : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
-                                      )}
-                                    >
-                                      <span>{sec.sector}</span>
-                                      {selectedSector === sec.sector && <Check className="h-3.5 w-3.5" />}
-                                    </button>
-                                  ))}
+                            <div className="fixed inset-0 z-20" onClick={() => setDropdownOpen(false)} />
+                            <div className="absolute left-0 mt-2 w-full bg-card border border-border rounded-xl shadow-2xl p-2 z-30 animate-in fade-in duration-150">
+                              <div className="max-h-56 overflow-y-auto space-y-1 pr-1">
+                                {sectors.map((sec) => (
+                                  <button
+                                    key={sec.sector}
+                                    onClick={() => {
+                                      setSelectedSector(sec.sector)
+                                      setDropdownOpen(false)
+                                    }}
+                                    className={cn(
+                                      "flex items-center justify-between w-full px-3 py-2 rounded-lg text-xs font-bold text-left transition-all cursor-pointer",
+                                      selectedSector === sec.sector ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    )}
+                                  >
+                                    <span>{sec.sector}</span>
+                                    {selectedSector === sec.sector && <Check className="h-3.5 w-3.5" />}
+                                  </button>
+                                ))}
                               </div>
                             </div>
                           </>
@@ -669,10 +549,10 @@ function LandingPage() {
                       </div>
                     )}
 
-                    {/* Sector Card grid display */}
+                    {/* Sector Grid Display */}
                     {sectors.filter(s => s.sector === selectedSector).map((sec) => (
                       <SectorCardContainer 
-                        key={`${sec.sector}-${heatmapRefreshKey}`}
+                        key={sec.sector}
                         sectorData={sec} 
                         convert={convert}
                         navigate={navigate}
@@ -683,39 +563,36 @@ function LandingPage() {
               </div>
             )}
 
-            {/* 3. GLOBAL INDICES TAB */}
+            {/* GLOBAL INDICES TAB */}
             {activeTab === 'indices' && (
-              <div className="space-y-6 animate-in fade-in duration-200 text-left">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 pl-1">
-                  <Globe className="h-4 w-4" /> Global Indices Watch
-                </span>
+              <div className="space-y-6 text-left animate-in fade-in duration-200">
                 {liveLoading ? (
-                  <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {[1, 2, 3].map((n) => (
-                      <Card key={n} className="border-border bg-muted/5 p-6 rounded-[2rem] h-24 flex items-center justify-between animate-pulse" />
+                      <Card key={n} className="border border-border bg-muted/20 p-5 rounded-2xl h-20 animate-pulse" />
                     ))}
                   </div>
                 ) : (
-                  <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {liveAssets.filter(item => item.symbol.startsWith('^')).map((item) => {
                       const isPositive = item.changePercent >= 0
                       return (
                         <Card 
                           key={item.symbol} 
-                          className="border-border bg-muted/10 hover:border-zinc-650 hover:bg-muted/20 transition-all duration-300 rounded-[2rem] p-6 flex items-center justify-between cursor-pointer group hover:-translate-y-1 hover:shadow-lg"
-                          onClick={() => navigate({ to: '/stock/$symbol', params: { symbol: item.symbol }})}
+                          className="border border-border bg-muted/20 hover:border-zinc-500/50 hover:bg-muted/40 transition-all rounded-2xl p-5 flex items-center justify-between cursor-pointer group shadow-sm"
+                          onClick={() => navigate({ to: '/dashboard/stock/$symbol', params: { symbol: item.symbol }})}
                         >
                           <div>
-                            <span className="font-extrabold text-white text-sm tracking-tight">{item.symbol}</span>
+                            <span className="font-black text-foreground text-sm tracking-tight">{item.symbol}</span>
                             <p className="text-[10px] font-bold text-muted-foreground truncate mt-0.5 max-w-[150px]">{item.name}</p>
                           </div>
                           {item.history && (
-                            <div className="mx-3 shrink-0">
+                            <div className="mx-2 shrink-0">
                               <Sparkline history={item.history} changePercent={item.changePercent} />
                             </div>
                           )}
                           <div className="text-right shrink-0 pl-1">
-                            <p className="font-black text-white text-sm">{convert(item.price).formatted}</p>
+                            <p className="font-black text-foreground text-sm">{convert(item.price).formatted}</p>
                             <span className={cn(
                               "text-[10px] font-bold flex items-center gap-0.5 justify-end mt-0.5",
                               isPositive ? "text-emerald-500" : "text-rose-500"
@@ -735,36 +612,61 @@ function LandingPage() {
           </div>
         </div>
 
-        {/* Feature Highlights section */}
-        <div className="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 text-left mt-6">
-          <div className="bg-muted/5 border border-border/60 rounded-[2rem] p-8 flex flex-col justify-between">
-            <div>
-              <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 text-white flex items-center justify-center mb-4">
-                <Compass className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-black text-white uppercase tracking-wider mb-2">Technical Screeners</h3>
-              <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
-                Filter equities dynamically across global exchanges. Check prices, sector assignments, and listings in a unified matrix.
-              </p>
-            </div>
-            <Link to="/search" className="text-xs font-black text-white uppercase tracking-wider inline-flex items-center gap-1.5 mt-8 hover:translate-x-1.5 transition-transform no-underline">
-              Launch Screener <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+        {/* 3. Core Features Grid */}
+        <div className="w-full space-y-8">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Built for Serious Traders</h2>
+            <p className="text-xs sm:text-sm font-semibold text-muted-foreground">Comprehensive suite of market tools engineered for clarity and performance.</p>
           </div>
 
-          <div className="bg-muted/5 border border-border/60 rounded-[2rem] p-8 flex flex-col justify-between">
-            <div>
-              <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 text-white flex items-center justify-center mb-4">
-                <LayoutGrid className="h-5 w-5" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+            <Card className="rounded-[2rem] border border-border bg-card p-6 shadow-md hover:border-zinc-500/50 transition-all space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground">
+                <Mail className="h-5 w-5" />
               </div>
-              <h3 className="text-lg font-black text-white uppercase tracking-wider mb-2">Live Heatmaps</h3>
-              <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
-                Track daily performance metrics grouped by sector. Beautiful color tags signify strong bullish gainers or bearish outliers.
-              </p>
-            </div>
-            <Link to="/heatmap" className="text-xs font-black text-white uppercase tracking-wider inline-flex items-center gap-1.5 mt-8 hover:translate-x-1.5 transition-transform no-underline">
-              Launch Heatmap <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+              <div>
+                <h3 className="font-black text-foreground text-base">AI Email Alerts</h3>
+                <p className="text-xs text-muted-foreground font-semibold mt-1 leading-relaxed">
+                  Receive automated intraday news digests and catalysts sent directly to your inbox.
+                </p>
+              </div>
+            </Card>
+
+            <Card className="rounded-[2rem] border border-border bg-card p-6 shadow-md hover:border-zinc-500/50 transition-all space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground">
+                <Briefcase className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-black text-foreground text-base">Paper Trading</h3>
+                <p className="text-xs text-muted-foreground font-semibold mt-1 leading-relaxed">
+                  Execute virtual intraday trades with real-time Indian stock market feeds (9:15 AM - 3:30 PM IST).
+                </p>
+              </div>
+            </Card>
+
+            <Card className="rounded-[2rem] border border-border bg-card p-6 shadow-md hover:border-zinc-500/50 transition-all space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground">
+                <TrendingUp className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-black text-foreground text-base">Market Sentiment</h3>
+                <p className="text-xs text-muted-foreground font-semibold mt-1 leading-relaxed">
+                  Track bullish and bearish sentiment scores generated by deep news scraping engines.
+                </p>
+              </div>
+            </Card>
+
+            <Card className="rounded-[2rem] border border-border bg-card p-6 shadow-md hover:border-zinc-500/50 transition-all space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground">
+                <MessageSquare className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-black text-foreground text-base">Equinox AI</h3>
+                <p className="text-xs text-muted-foreground font-semibold mt-1 leading-relaxed">
+                  Chat with an AI financial assistant trained on technical chart patterns and equity fundamentals.
+                </p>
+              </div>
+            </Card>
           </div>
         </div>
 
@@ -802,103 +704,54 @@ function SectorCardContainer({ sectorData, convert, navigate }: { sectorData: He
     loadQuotes()
   }, [sectorData])
 
-  const arr = sectorData.companies.map(c => {
-    const q = quotes[c.symbol]
-    return {
-      ...c,
-      price: q ? q.price : 0.0,
-      changePercent: q ? q.changePercent : 0.0,
-      isLoaded: !loading
-    }
-  })
-
   return (
-    <Card className="border-border bg-muted/10 rounded-[2.5rem] p-8 text-left flex flex-col gap-6 w-full mt-6 shadow-xl">
-      <div className="flex items-center gap-3 border-b border-border/40 pb-4">
-        <Layers className="h-5 w-5 text-muted-foreground" />
-        <h3 className="font-extrabold text-white text-lg tracking-tight">{sectorData.sector}</h3>
-        {loading && <Loader2 className="h-4.5 w-4.5 text-zinc-500 animate-spin ml-2" />}
-        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-zinc-800 text-zinc-400 ml-auto">
-          {sectorData.companies.length} Tickers
-        </span>
-      </div>
+    <div className="space-y-4">
+      <h3 className="text-sm font-black text-foreground uppercase tracking-wider">{sectorData.sector} Sector Matrix</h3>
+      {loading ? (
+        <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground py-6">
+          <Loader2 className="h-4 w-4 animate-spin" /> Querying sector quotes...
+        </div>
+      ) : (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {sectorData.companies.map((c) => {
+            const q = quotes[c.symbol] || {}
+            const price = q.price || c.price || 0
+            const changePercent = q.changePercent ?? c.changePercent ?? 0
+            const isPositive = changePercent >= 0
+            const logoUrl = getCompanyLogo(c.name, c.symbol)
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-        {arr.map((c) => {
-          const logoUrl = getCompanyLogo(c.name, c.symbol)
-          
-          if (loading || !c.isLoaded) {
             return (
-              <div 
-                key={c.symbol} 
-                className="rounded-3xl p-5 h-28 bg-zinc-900/40 border border-border/30 flex flex-col justify-between animate-pulse"
+              <Card 
+                key={c.symbol}
+                className="border border-border bg-muted/20 hover:border-zinc-500/50 hover:bg-muted/40 transition-all rounded-2xl p-4 flex items-center justify-between cursor-pointer shadow-sm"
+                onClick={() => navigate({ to: '/dashboard/stock/$symbol', params: { symbol: c.symbol }})}
               >
-                <div className="h-5 w-14 bg-zinc-850 rounded" />
-                <div className="h-4 w-20 bg-zinc-850 rounded self-end mt-4" />
-              </div>
-            )
-          }
-
-          const val = c.changePercent
-          const blockColorClass = 
-            val >= 3.0 ? "bg-emerald-950/80 border-emerald-500 text-emerald-300 hover:bg-emerald-900/90" :
-            val > 0.0 ? "bg-emerald-950/40 border-emerald-700/40 text-emerald-400 hover:bg-emerald-900/50" :
-            val === 0.0 ? "bg-zinc-900/30 border-border text-zinc-400 hover:bg-zinc-800/40" :
-            val > -3.0 ? "bg-rose-950/40 border-rose-700/40 text-rose-400 hover:bg-rose-900/50" :
-            "bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900/90"
-
-          return (
-            <div
-              key={c.symbol}
-              onClick={() => navigate({ to: '/stock/$symbol', params: { symbol: c.symbol }})}
-              className={cn(
-                "rounded-3xl p-5 flex flex-col justify-between gap-4 cursor-pointer hover:scale-[1.03] hover:shadow-xl transition-all duration-300 border text-left",
-                blockColorClass
-              )}
-            >
-              <div className="flex items-center justify-between gap-2">
-                {logoUrl ? (
+                <div className="flex items-center gap-3 overflow-hidden flex-1">
                   <img 
                     src={logoUrl} 
                     alt="" 
-                    className="h-10 w-10 rounded-2xl bg-white object-contain p-1 border border-black/10 shrink-0 shadow-sm"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      const s = c.symbol.toUpperCase().split('.')[0];
-                      if (target.src.includes(`/NSE/${s}.png`)) {
-                        target.src = `https://eodhd.com/img/logos/NSE/${s.toLowerCase()}.png`;
-                      } else if (target.src.includes(`/US/${s}.png`)) {
-                        target.src = `https://eodhd.com/img/logos/US/${s.toLowerCase()}.png`;
-                      } else if (target.src.includes('eodhd.com')) {
-                        const domain = getBrandfetchDomain(c.name, c.symbol);
-                        if (domain) {
-                          target.src = `https://cdn.brandfetch.io/domain/${domain}?c=1idlu8B6H0L485PeI84`;
-                        } else {
-                          target.style.display = 'none';
-                        }
-                      } else {
-                        target.style.display = 'none';
-                      }
-                    }}
+                    className="h-8 w-8 rounded-lg bg-white object-contain p-0.5 border border-border shrink-0 shadow-sm"
+                    onError={(e) => { (e.target as HTMLElement).style.display = 'none' }}
                   />
-                ) : (
-                  <div className="h-10 w-10 rounded-2xl bg-zinc-800 flex items-center justify-center text-[10px] font-black text-white shrink-0 uppercase">
-                    {c.symbol.slice(0, 2)}
+                  <div className="overflow-hidden">
+                    <span className="font-black text-foreground text-xs block truncate">{c.symbol}</span>
+                    <span className="text-[10px] font-bold text-muted-foreground block truncate">{c.name}</span>
                   </div>
-                )}
-                <span className="font-extrabold text-sm tracking-tight uppercase truncate">{c.symbol.split('.')[0]}</span>
-              </div>
-              
-              <div className="text-right mt-1">
-                <p className="text-[10px] font-bold opacity-80 uppercase leading-none mb-1">{c.symbol.includes('.') ? 'NSE' : 'NYSE'}</p>
-                <span className="text-sm font-black block tracking-tight">
-                  {val >= 0 ? '+' : ''}{val.toFixed(2)}%
-                </span>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </Card>
+                </div>
+                <div className="text-right shrink-0 pl-2">
+                  <span className="font-black text-foreground text-xs block">{convert(price).formatted}</span>
+                  <span className={cn(
+                    "text-[10px] font-bold inline-flex items-center gap-0.5 mt-0.5",
+                    isPositive ? "text-emerald-500" : "text-rose-500"
+                  )}>
+                    {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
+                  </span>
+                </div>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+    </div>
   )
 }

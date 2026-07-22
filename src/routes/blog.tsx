@@ -73,10 +73,10 @@ function BlogPage() {
         
         {/* Header Block */}
         <div className="space-y-4">
-          <Badge variant="outline" className="px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-zinc-900 border-zinc-800 text-zinc-400">
+          <Badge variant="outline" className="px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-muted/40 border-border text-zinc-400">
             Equinox Intelligence Log
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none">
+          <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight leading-none">
             Research, Systems, & Infrastructure.
           </h1>
           <p className="text-base text-muted-foreground font-semibold leading-relaxed max-w-2xl">
@@ -87,7 +87,7 @@ function BlogPage() {
         {/* Article Listings */}
         <section className="space-y-8">
           {articles.map((art) => (
-            <Card key={art.slug} className="rounded-[2.5rem] border-border bg-muted/10 p-8 hover:border-zinc-700 hover:bg-muted/15 transition-all duration-300 group">
+            <Card key={art.slug} className="rounded-[2.5rem] border-border bg-muted/10 p-8 hover:border-border hover:bg-muted/15 transition-all duration-300 group">
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <Badge variant="secondary" className="bg-white text-black font-black text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-md h-auto">
@@ -103,7 +103,7 @@ function BlogPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <h2 className="text-xl sm:text-2xl font-black text-white group-hover:text-zinc-300 transition-colors leading-tight">
+                  <h2 className="text-xl sm:text-2xl font-black text-foreground group-hover:text-zinc-300 transition-colors leading-tight">
                     {art.title}
                   </h2>
                   <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
@@ -115,7 +115,7 @@ function BlogPage() {
                   <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
                     By {art.author}
                   </span>
-                  <span className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1 hover:translate-x-1.5 transition-transform cursor-pointer">
+                  <span className="text-xs font-black uppercase text-foreground tracking-wider flex items-center gap-1 hover:translate-x-1.5 transition-transform cursor-pointer">
                     Read Article <ArrowRight className="h-4 w-4" />
                   </span>
                 </div>
@@ -131,7 +131,7 @@ function BlogPage() {
           <div className="max-w-xl mx-auto text-center space-y-6">
             <Rss className="h-8 w-8 text-zinc-400 mx-auto animate-pulse" />
             <div className="space-y-2">
-              <h2 className="text-xl font-black text-white uppercase tracking-wider">Subscribe to our Engineering Log</h2>
+              <h2 className="text-xl font-black text-foreground uppercase tracking-wider">Subscribe to our Engineering Log</h2>
               <p className="text-xs text-muted-foreground font-semibold max-w-sm mx-auto leading-relaxed">
                 Receive our monthly digest covering quantitative algorithms, platform architecture updates, and performance data releases.
               </p>
@@ -152,7 +152,7 @@ function BlogPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="rounded-xl border-border bg-background text-xs h-10 font-bold flex-1"
                 />
-                <Button type="submit" className="rounded-xl h-10 bg-blue-600 hover:bg-blue-700 text-white border-0 font-black text-xs uppercase px-5 tracking-wider flex items-center gap-1.5 cursor-pointer">
+                <Button type="submit" className="rounded-xl h-10 bg-blue-600 hover:bg-blue-700 text-foreground border-0 font-black text-xs uppercase px-5 tracking-wider flex items-center gap-1.5 cursor-pointer">
                   Subscribe <Send className="h-3.5 w-3.5" />
                 </Button>
               </form>

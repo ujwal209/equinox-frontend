@@ -372,7 +372,7 @@ function StockDetailPage() {
                       <DropdownMenuTrigger className="opacity-0 group-hover:opacity-100 p-1 hover:bg-zinc-800 rounded transition outline-none">
                         <MoreVertical className="h-3.5 w-3.5" />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-36 bg-zinc-950 border border-border rounded-xl p-1 z-50">
+                      <DropdownMenuContent align="end" className="w-36 bg-card border border-border rounded-xl p-1 z-50">
                         <DropdownMenuItem onClick={(e) => startRenaming(s._id, s.title, e)} className="text-xs font-semibold cursor-pointer">
                           <Edit2 className="h-3 w-3 mr-2" /> Rename
                         </DropdownMenuItem>
@@ -402,7 +402,7 @@ function StockDetailPage() {
                   {activeModel} <ChevronDown className="h-3.5 w-3.5 ml-1.5 opacity-80" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48 bg-zinc-950 border border-border rounded-xl p-1 z-50">
+              <DropdownMenuContent className="w-48 bg-card border border-border rounded-xl p-1 z-50">
                 {['Llama 3 70B', 'Mixtral 8x7B'].map((model) => (
                   <DropdownMenuItem key={model} onClick={() => { setActiveModel(model); setIsModelDropdownOpen(false); }} className="text-xs font-semibold cursor-pointer">{model}</DropdownMenuItem>
                 ))}
@@ -419,7 +419,7 @@ function StockDetailPage() {
             {messages.length === 0 ? (
               <div className="py-20 text-center space-y-4">
                 <BrainCircuit className="h-12 w-12 text-indigo-500 mx-auto animate-pulse" />
-                <h3 className="text-lg font-black text-white uppercase tracking-wider">Algorithmic Thesis Agent</h3>
+                <h3 className="text-lg font-black text-foreground uppercase tracking-wider">Algorithmic Thesis Agent</h3>
                 <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed font-semibold">
                   Ask Equinox GPT to summarize timeseries metrics, technical charts, analyst indicators, or general financial statistics for {symbol}.
                 </p>
@@ -429,7 +429,7 @@ function StockDetailPage() {
                 <div key={i} className="flex gap-4 flex-row">
                   <div className={cn(
                     "h-8 w-8 shrink-0 rounded-full flex items-center justify-center font-bold text-xs uppercase shadow-sm ring-1 ring-border",
-                    m.role === 'user' ? "bg-zinc-800 text-white" : "bg-foreground text-background"
+                    m.role === 'user' ? "bg-zinc-800 text-foreground" : "bg-foreground text-background"
                   )}>
                     {m.role === 'user' ? (user?.email?.slice(0,2) || 'US') : 'EQ'}
                   </div>
@@ -512,7 +512,7 @@ function StockDetailPage() {
             <Button 
               onClick={() => sendAIMessage()}
               disabled={isLoadingAI || !input.trim()}
-              className="h-9 w-9 shrink-0 rounded-full bg-foreground text-background hover:bg-zinc-800 hover:text-white border-none shadow-md flex items-center justify-center transition-all disabled:opacity-50 mb-1 mr-1"
+              className="h-9 w-9 shrink-0 rounded-full bg-foreground text-background hover:bg-zinc-800 hover:text-foreground border-none shadow-md flex items-center justify-center transition-all disabled:opacity-50 mb-1 mr-1"
             >
               <Send className="h-4 w-4 ml-0.5" />
             </Button>
@@ -562,7 +562,7 @@ function StockDetailPage() {
                 alt={`${symbol} logo`}
               />
             ) : (
-              <div className="h-20 w-20 bg-gradient-to-br from-zinc-700 to-zinc-900 text-white shadow-xl rounded-2xl flex items-center justify-center font-black text-2xl uppercase ring-1 ring-border">
+              <div className="h-20 w-20 bg-gradient-to-br from-zinc-700 to-zinc-900 text-foreground shadow-xl rounded-2xl flex items-center justify-center font-black text-2xl uppercase ring-1 ring-border">
                 {symbol.replace(/[^A-Za-z]/g, '').slice(0, 3) || 'EQ'}
               </div>
             )}
@@ -594,7 +594,7 @@ function StockDetailPage() {
                 <span className="font-bold">Equinox GPT</span>
               </Button>
             ) : (
-              <Button onClick={() => navigate({ to: '/login' })} className="flex gap-2 bg-zinc-900 hover:bg-zinc-850 text-white rounded-2xl h-12 px-6 shadow-md transition-all active:scale-95 border border-border">
+              <Button onClick={() => navigate({ to: '/login' })} className="flex gap-2 bg-muted/40 hover:bg-zinc-850 text-foreground rounded-2xl h-12 px-6 shadow-md transition-all active:scale-95 border border-border">
                 <span className="font-bold">Sign In for AI Analysis</span>
               </Button>
             )}
@@ -660,7 +660,7 @@ function StockDetailPage() {
                   <span className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 block">Overall Sentiment</span>
                   <Badge variant="default" className={cn("text-xl font-black px-6 py-2 rounded-full shadow-sm w-fit", 
                     sentimentData.sentiment === 'BULLISH' ? "bg-foreground text-background" : 
-                    sentimentData.sentiment === 'BEARISH' ? "bg-zinc-600 text-zinc-100" : "bg-zinc-500 text-white"
+                    sentimentData.sentiment === 'BEARISH' ? "bg-zinc-600 text-zinc-100" : "bg-zinc-500 text-foreground"
                   )}>
                     {isAuthenticated ? (sentimentData.sentiment?.toUpperCase() || 'NEUTRAL') : 'LOCKED'}
                   </Badge>
@@ -672,7 +672,7 @@ function StockDetailPage() {
                   </div>
                   {!isAuthenticated && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 text-center z-20">
-                      <p className="text-sm font-black text-white uppercase tracking-wider mb-2">Unlock AI Sentiment Analysis</p>
+                      <p className="text-sm font-black text-foreground uppercase tracking-wider mb-2">Unlock AI Sentiment Analysis</p>
                       <p className="text-xs text-muted-foreground font-semibold mb-4 max-w-xs leading-relaxed">Create a free account or sign in to view real-time AI news summaries and market triggers.</p>
                       <Button asChild className="rounded-xl bg-white hover:bg-zinc-200 text-black font-black text-xs h-9 px-5">
                         <Link to="/login" className="no-underline">Sign In</Link>

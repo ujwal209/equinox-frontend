@@ -54,11 +54,10 @@ const getBrandfetchDomain = (name: string, symbol: string) => {
 }
 
 const getCompanyLogo = (name: string, symbol: string) => {
-  const s = symbol.toUpperCase().split('.')[0]
-  if (symbol.includes('.')) {
-    return `https://eodhd.com/img/logos/NSE/${s}.png`
-  }
-  return `https://eodhd.com/img/logos/US/${s}.png`
+  if (!symbol) return ''
+  const clean = symbol.split('.')[0].toUpperCase()
+  const exchange = symbol.toUpperCase().endsWith('.BO') ? 'BSE' : (symbol.includes('.') ? 'NSE' : 'US')
+  return `https://eodhd.com/img/logos/${exchange}/${clean}.png`
 }
 const Sparkline = ({ history, changePercent }: { history: number[], changePercent: number }) => {
   if (!history || history.length < 2) return null
@@ -293,7 +292,7 @@ function DashboardWatchlist() {
   if (loadingInitial) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-white" />
+        <Loader2 className="h-6 w-6 animate-spin text-foreground" />
       </div>
     )
   }
@@ -306,7 +305,7 @@ function DashboardWatchlist() {
       {/* Header Area */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Watchlists</h1>
+          <h1 className="text-2xl font-black text-foreground tracking-tight">Watchlists</h1>
           <p className="text-sm text-muted-foreground font-medium">Monitor your custom portfolios and track live prices.</p>
         </div>
         <Button onClick={() => setIsCreating(true)} size="sm" className="rounded-xl font-bold gap-1.5 h-9 bg-white hover:bg-zinc-200 text-black">
@@ -327,7 +326,7 @@ function DashboardWatchlist() {
                 "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition border",
                 activeListId === w.id 
                   ? "bg-white text-black border-white shadow-md hover:bg-zinc-150"
-                  : "bg-muted/10 text-muted-foreground border-border/30 hover:border-zinc-650 hover:text-white"
+                  : "bg-muted/10 text-muted-foreground border-border/30 hover:border-zinc-650 hover:text-foreground"
               )}
             >
               {w.name}
@@ -339,7 +338,7 @@ function DashboardWatchlist() {
           <div className="text-center py-16 border border-dashed border-[var(--line)] rounded-3xl bg-muted/10">
             <Star className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-30" />
             <p className="text-sm font-bold text-muted-foreground">You have no watchlists yet.</p>
-            <Button onClick={() => setIsCreating(true)} variant="link" className="text-white font-bold">Create one now</Button>
+            <Button onClick={() => setIsCreating(true)} variant="link" className="text-foreground font-bold">Create one now</Button>
           </div>
         )
       )}
@@ -357,7 +356,7 @@ function DashboardWatchlist() {
                 className="pl-11 bg-muted/15 border-border rounded-xl focus-visible:ring-white/5 focus-visible:border-zinc-500 font-semibold h-11"
               />
               {searchResults.length > 0 && (
-                <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-zinc-950 border border-border rounded-2xl shadow-2xl z-50 overflow-hidden divide-y divide-border/60">
+                <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-card border border-border rounded-2xl shadow-2xl z-50 overflow-hidden divide-y divide-border/60">
                   {searchResults.map((res: any, idx) => (
                     <button
                       key={`${res.symbol}-${idx}`}
@@ -390,17 +389,17 @@ function DashboardWatchlist() {
                             }}
                           />
                         ) : (
-                          <div className="h-10 w-10 rounded-xl bg-zinc-800 flex items-center justify-center text-xs font-black uppercase text-white shrink-0">
+                          <div className="h-10 w-10 rounded-xl bg-zinc-800 flex items-center justify-center text-xs font-black uppercase text-foreground shrink-0">
                             {res.symbol.replace(/[^A-Za-z]/g, '').slice(0,2) || 'EQ'}
                           </div>
                         )}
                         <div>
-                          <div className="font-extrabold text-white text-sm tracking-tight">{res.symbol}</div>
+                          <div className="font-extrabold text-foreground text-sm tracking-tight">{res.symbol}</div>
                           <div className="text-[10px] font-bold text-muted-foreground truncate max-w-[200px] mt-0.5">{res.name}</div>
                         </div>
                       </div>
                       <div className="h-7 w-7 rounded-full bg-muted/20 border border-border flex items-center justify-center hover:scale-105 transition-transform">
-                        <Plus className="h-3.5 w-3.5 text-white" />
+                        <Plus className="h-3.5 w-3.5 text-foreground" />
                       </div>
                     </button>
                   ))}
@@ -461,13 +460,13 @@ function DashboardWatchlist() {
                             }}
                           />
                         ) : (
-                          <div className="h-12 w-12 rounded-3xl bg-zinc-800 flex items-center justify-center text-sm font-black uppercase text-white shrink-0">
+                          <div className="h-12 w-12 rounded-3xl bg-zinc-800 flex items-center justify-center text-sm font-black uppercase text-foreground shrink-0">
                             {sym.replace(/[^A-Za-z]/g, '').slice(0,2) || 'EQ'}
                           </div>
                         )}
 
                         <div className="overflow-hidden">
-                          <h3 className="font-extrabold text-white text-sm tracking-tight">{sym}</h3>
+                          <h3 className="font-extrabold text-foreground text-sm tracking-tight">{sym}</h3>
                           <p className="text-[10px] font-bold text-muted-foreground truncate mt-0.5">{q ? q.name : 'Loading...'}</p>
                         </div>
                       </div>
@@ -482,7 +481,7 @@ function DashboardWatchlist() {
                       <div className="text-right shrink-0 pl-1">
                         {q ? (
                           <>
-                            <div className="font-black text-white text-sm">{convert(q.price).formatted}</div>
+                            <div className="font-black text-foreground text-sm">{convert(q.price).formatted}</div>
                             <span className={cn(
                               "text-[10px] font-bold flex items-center gap-0.5 justify-end mt-0.5",
                               q.isPositive ? "text-emerald-500" : "text-rose-500"
@@ -507,7 +506,7 @@ function DashboardWatchlist() {
       <Dialog open={isCreating} onOpenChange={setIsCreating}>
         <DialogContent className="rounded-[2rem] border border-border bg-background max-w-md p-6 text-left">
           <DialogHeader>
-            <DialogTitle className="text-lg font-black text-white">Create Watchlist</DialogTitle>
+            <DialogTitle className="text-lg font-black text-foreground">Create Watchlist</DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground font-semibold">
               Organize your favorite equities, indices or crypto trackers into a custom surveillance feed.
             </DialogDescription>

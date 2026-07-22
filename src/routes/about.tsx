@@ -23,7 +23,7 @@ function About() {
         </p>
         <Link
           to="/"
-          className={cn(buttonVariants({ variant: 'default' }), "bg-blue-600 hover:bg-blue-700 text-white border-0 inline-flex items-center gap-1 font-bold text-sm px-6 py-3 rounded-full transition no-underline h-auto")}
+          className={cn(buttonVariants({ variant: 'default' }), "bg-blue-600 hover:bg-blue-700 text-foreground border-0 inline-flex items-center gap-1 font-bold text-sm px-6 py-3 rounded-full transition no-underline h-auto")}
         >
           View Recommendations <ArrowUpRight className="h-4 w-4" />
         </Link>

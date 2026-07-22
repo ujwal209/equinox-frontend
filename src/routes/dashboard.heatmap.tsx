@@ -110,7 +110,7 @@ function DashboardHeatmap() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Lazy Hydrating Performance Map</span>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
             <LayoutGrid className="h-6 w-6" /> Market Heatmap
           </h1>
           <p className="text-sm text-muted-foreground font-semibold mt-1">
@@ -126,7 +126,7 @@ function DashboardHeatmap() {
               onClick={() => setSortOrder('perf-high')}
               className={cn(
                 "px-3 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer",
-                sortOrder === 'perf-high' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-white"
+                sortOrder === 'perf-high' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
               Gainers First
@@ -135,7 +135,7 @@ function DashboardHeatmap() {
               onClick={() => setSortOrder('perf-low')}
               className={cn(
                 "px-3 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer",
-                sortOrder === 'perf-low' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-white"
+                sortOrder === 'perf-low' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
               Losers First
@@ -144,7 +144,7 @@ function DashboardHeatmap() {
               onClick={() => setSortOrder('name')}
               className={cn(
                 "px-3 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer",
-                sortOrder === 'name' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-white"
+                sortOrder === 'name' ? "bg-white text-black shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
               Alphabetical
@@ -154,7 +154,7 @@ function DashboardHeatmap() {
           <Button 
             variant="outline" 
             onClick={handleRefresh}
-            className="rounded-xl border-border bg-muted/10 hover:bg-muted/20 font-bold text-white h-9 px-4 cursor-pointer"
+            className="rounded-xl border-border bg-muted/10 hover:bg-muted/20 font-bold text-foreground h-9 px-4 cursor-pointer"
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -166,7 +166,7 @@ function DashboardHeatmap() {
         <div className="relative z-50">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center justify-between w-full md:w-96 px-5 py-3 bg-zinc-900/60 border border-border/80 rounded-2xl text-sm font-bold text-white cursor-pointer hover:bg-zinc-800/80 transition-all shadow-md"
+            className="flex items-center justify-between w-full md:w-96 px-5 py-3 bg-muted/40/60 border border-border/80 rounded-2xl text-sm font-bold text-foreground cursor-pointer hover:bg-zinc-800/80 transition-all shadow-md"
           >
             <span className="flex items-center gap-2">
               <Layers className="h-4.5 w-4.5 text-muted-foreground" />
@@ -180,7 +180,7 @@ function DashboardHeatmap() {
               {/* Backdrop to close */}
               <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
               
-              <div className="absolute left-0 mt-2 w-full md:w-96 bg-zinc-950 border border-border rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute left-0 mt-2 w-full md:w-96 bg-card border border-border rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 <div className="relative flex items-center mb-3">
                   <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
                   <input
@@ -188,7 +188,7 @@ function DashboardHeatmap() {
                     placeholder="Search sectors..."
                     value={sectorSearch}
                     onChange={(e) => setSectorSearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-zinc-900 border border-border/60 rounded-xl text-xs font-semibold text-white placeholder-muted-foreground focus:outline-none focus:border-white/40 transition-colors"
+                    className="w-full pl-9 pr-4 py-2 bg-muted/40 border border-border/60 rounded-xl text-xs font-semibold text-foreground placeholder-muted-foreground focus:outline-none focus:border-white/40 transition-colors"
                   />
                 </div>
                 
@@ -207,7 +207,7 @@ function DashboardHeatmap() {
                           "flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-xs font-bold text-left transition-all cursor-pointer",
                           selectedSector === sec.sector
                             ? "bg-white text-black"
-                            : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                            : "text-zinc-400 hover:bg-muted/40 hover:text-foreground"
                         )}
                       >
                         <span>{sec.sector}</span>
@@ -309,7 +309,7 @@ function SectorCard({ sectorData, sortOrder }: { sectorData: HeatmapSector; sort
       {/* Sector Header Label */}
       <div className="flex items-center gap-3 border-b border-border/40 pb-4">
         <Layers className="h-5 w-5 text-muted-foreground" />
-        <h3 className="font-extrabold text-white text-lg tracking-tight">{sectorData.sector}</h3>
+        <h3 className="font-extrabold text-foreground text-lg tracking-tight">{sectorData.sector}</h3>
         {loading && <Loader2 className="h-5 w-5 text-zinc-500 animate-spin ml-2" />}
         <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-zinc-800 text-zinc-400 ml-auto">
           {sectorData.companies.length} Tickers
@@ -325,7 +325,7 @@ function SectorCard({ sectorData, sortOrder }: { sectorData: HeatmapSector; sort
             return (
               <div 
                 key={c.symbol} 
-                className="rounded-3xl p-5 h-28 bg-zinc-900/40 border border-border/30 flex flex-col justify-between animate-pulse"
+                className="rounded-3xl p-5 h-28 bg-muted/40/40 border border-border/30 flex flex-col justify-between animate-pulse"
               >
                 <div className="h-5 w-14 bg-zinc-800 rounded" />
                 <div className="h-4 w-20 bg-zinc-800 rounded self-end mt-4" />
@@ -339,7 +339,7 @@ function SectorCard({ sectorData, sortOrder }: { sectorData: HeatmapSector; sort
           const blockColorClass = 
             val >= 3.0 ? "bg-emerald-950/80 border-emerald-500 text-emerald-300 hover:bg-emerald-900/90" :
             val > 0.0 ? "bg-emerald-950/40 border-emerald-700/40 text-emerald-400 hover:bg-emerald-900/50" :
-            val === 0.0 ? "bg-zinc-900/30 border-border text-zinc-400 hover:bg-zinc-800/40" :
+            val === 0.0 ? "bg-muted/40/30 border-border text-zinc-400 hover:bg-zinc-800/40" :
             val > -3.0 ? "bg-rose-950/40 border-rose-700/40 text-rose-400 hover:bg-rose-900/50" :
             "bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900/90"
 
@@ -378,7 +378,7 @@ function SectorCard({ sectorData, sortOrder }: { sectorData: HeatmapSector; sort
                     }}
                   />
                 ) : (
-                  <div className="h-10 w-10 rounded-2xl bg-zinc-800 flex items-center justify-center text-xs font-black text-white shrink-0 uppercase">
+                  <div className="h-10 w-10 rounded-2xl bg-zinc-800 flex items-center justify-center text-xs font-black text-foreground shrink-0 uppercase">
                     {c.symbol.slice(0, 2)}
                   </div>
                 )}

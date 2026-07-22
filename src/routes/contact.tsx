@@ -33,10 +33,10 @@ function ContactPage() {
         
         {/* Header Block */}
         <div className="space-y-4">
-          <Badge variant="outline" className="px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-zinc-900 border-zinc-800 text-zinc-400">
+          <Badge variant="outline" className="px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-muted/40 border-border text-zinc-400">
             Contact Desk
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none">
+          <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight leading-none">
             Get in Touch with our Operations.
           </h1>
           <p className="text-base text-muted-foreground font-semibold leading-relaxed max-w-3xl">
@@ -48,18 +48,18 @@ function ContactPage() {
         <section className="grid gap-6 grid-cols-1 md:grid-cols-3">
           <Card className="rounded-[2rem] p-8 border-border bg-muted/10">
             <Mail className="h-6 w-6 text-zinc-400 mb-4" />
-            <h3 className="text-sm font-black text-white uppercase tracking-wider mb-2">Electronic Mail</h3>
+            <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">Electronic Mail</h3>
             <p className="text-xs text-muted-foreground leading-relaxed font-semibold mb-3">
               Direct inquiries and support tickets:
             </p>
-            <a href="mailto:ops@equinox.tech" className="text-xs font-black text-white hover:underline uppercase tracking-wider block">
+            <a href="mailto:ops@equinox.tech" className="text-xs font-black text-foreground hover:underline uppercase tracking-wider block">
               ops@equinox.tech
             </a>
           </Card>
           
           <Card className="rounded-[2rem] p-8 border-border bg-muted/10">
             <MapPin className="h-6 w-6 text-zinc-400 mb-4" />
-            <h3 className="text-sm font-black text-white uppercase tracking-wider mb-2">Operations Hub</h3>
+            <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">Operations Hub</h3>
             <p className="text-xs text-muted-foreground leading-relaxed font-semibold mb-3">
               Equinox Technologies Inc.
             </p>
@@ -71,7 +71,7 @@ function ContactPage() {
 
           <Card className="rounded-[2rem] p-8 border-border bg-muted/10">
             <Clock className="h-6 w-6 text-zinc-400 mb-4" />
-            <h3 className="text-sm font-black text-white uppercase tracking-wider mb-2">Operational Hours</h3>
+            <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">Operational Hours</h3>
             <p className="text-xs text-muted-foreground leading-relaxed font-semibold mb-3">
               Operations support window:
             </p>
@@ -87,13 +87,13 @@ function ContactPage() {
           
           <div className="lg:col-span-1 space-y-6">
             <div className="space-y-2">
-              <h2 className="text-xl font-black text-white uppercase tracking-wider">Send a Message</h2>
+              <h2 className="text-xl font-black text-foreground uppercase tracking-wider">Send a Message</h2>
               <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
                 Fill out the secure communication form, and our system will register it inside our team triage dashboard.
               </p>
             </div>
             
-            <div className="p-4 border border-zinc-800 bg-zinc-900/30 rounded-2xl flex items-start gap-3 text-zinc-400">
+            <div className="p-4 border border-border bg-muted/40/30 rounded-2xl flex items-start gap-3 text-zinc-400">
               <ShieldAlert className="h-5 w-5 text-zinc-500 shrink-0 mt-0.5" />
               <p className="text-[10px] font-semibold leading-relaxed">
                 All communications are encrypted end-to-end. We will never share your email address or personal credentials.
@@ -157,11 +157,11 @@ function ContactPage() {
                     placeholder="Describe your inquiry in detail..."
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    className="w-full rounded-xl border border-border bg-background text-xs font-bold text-white p-3 focus:outline-none focus:ring-1 focus:ring-zinc-650 transition-all leading-relaxed"
+                    className="w-full rounded-xl border border-border bg-background text-xs font-bold text-foreground p-3 focus:outline-none focus:ring-1 focus:ring-zinc-650 transition-all leading-relaxed"
                   />
                 </div>
 
-                <Button type="submit" className="rounded-xl h-11 bg-blue-600 hover:bg-blue-700 text-white border-0 font-black text-xs uppercase px-6 tracking-wider flex items-center gap-2 cursor-pointer">
+                <Button type="submit" className="rounded-xl h-11 bg-blue-600 hover:bg-blue-700 text-foreground border-0 font-black text-xs uppercase px-6 tracking-wider flex items-center gap-2 cursor-pointer">
                   Send Message <Send className="h-4 w-4" />
                 </Button>
               </form>

@@ -9,7 +9,7 @@ import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
-  plugins: [devtools(), tailwindcss(), tanstackStart(), nitro(), viteReact()],
+  plugins: [nitro(), devtools(), tailwindcss(), tanstackStart(), viteReact()],
 })
 
 export default config

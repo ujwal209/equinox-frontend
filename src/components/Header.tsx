@@ -59,7 +59,10 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(false)}
               className="inline-flex items-center gap-2.5 no-underline"
             >
-              <img src="/logo.png" alt="Equinox" className="h-10 w-auto object-contain" />
+              {theme === 'dark' && (
+                <img src="/logo.png" alt="Equinox" className="h-9 w-auto object-contain" />
+              )}
+              <span className="font-black text-[var(--sea-ink)] text-lg tracking-wider">EQUINOX</span>
             </Link>
           </div>
 
@@ -378,7 +381,7 @@ export default function Header() {
         <p><strong>Equinox Developer Feeds</strong></p>
         <p>Equinox provides local API endpoints to query suggestion lists and target calculations. These endpoints hydrate data structures directly from our TanStack Start server functions.</p>
         <h4 className="font-bold text-[var(--sea-ink)] mt-4 mb-2">1. Suggestions Feed</h4>
-        <pre className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg text-xs overflow-x-auto text-zinc-300">
+        <pre className="bg-muted/40 border border-border p-3 rounded-lg text-xs overflow-x-auto text-zinc-300">
 {`GET /api/suggestions?currency=USD
 Response:
 {
@@ -393,33 +396,6 @@ Response:
         <p>Connect to the mock feed at `ws://localhost:3000/api/ticks` to retrieve live JSON updates as price random walks compile.</p>
       </PolicyModal>
 
-      {/* Mobile Bottom Navigation (Visible only on small screens) */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 border-t border-[var(--line)] bg-[var(--header-bg)] backdrop-blur-xl px-4 py-3 flex justify-between items-center pb-safe">
-        <Link to="/" className="flex flex-col items-center gap-1 text-[var(--sea-ink-soft)] activeProps={{ className: 'text-[var(--sea-ink)]' }}">
-          <div className="p-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-          <span className="text-[10px] font-bold uppercase tracking-wider">Home</span>
-        </Link>
-        <Link to="/search" className="flex flex-col items-center gap-1 text-[var(--sea-ink-soft)] activeProps={{ className: 'text-[var(--sea-ink)]' }}">
-          <div className="p-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          <span className="text-[10px] font-bold uppercase tracking-wider">Screener</span>
-        </Link>
-        <Link to="/dashboard" className="flex flex-col items-center gap-1 text-[var(--sea-ink-soft)] activeProps={{ className: 'text-[var(--sea-ink)]' }}">
-          <div className="bg-[var(--sea-ink)] text-[var(--bg-base)] p-2 rounded-full -mt-6 shadow-lg shadow-black/20 border-4 border-[var(--header-bg)]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider">Dash</span>
-        </Link>
-        <Link to="/indices" className="flex flex-col items-center gap-1 text-[var(--sea-ink-soft)] activeProps={{ className: 'text-[var(--sea-ink)]' }}">
-          <div className="p-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></div>
-          <span className="text-[10px] font-bold uppercase tracking-wider">Indices</span>
-        </Link>
-        <Link to="/heatmap" className="flex flex-col items-center gap-1 text-[var(--sea-ink-soft)] activeProps={{ className: 'text-[var(--sea-ink)]' }}">
-          <div className="p-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg></div>
-          <span className="text-[10px] font-bold uppercase tracking-wider">Heatmap</span>
-        </Link>
-      </nav>
-      {/* Spacer to prevent content from hiding behind bottom nav */}
-      <div className="h-16 md:hidden"></div>
     </>
   )
 }
